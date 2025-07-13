@@ -76,33 +76,35 @@ const Home = () => {
       </div>
 
       {/* Features Section */}
-      <div className="py-24 bg-white">
+      <div className="py-16 sm:py-24 bg-white dark:bg-gray-800 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
               Why Choose BidDaddy?
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-4">
               Experience the thrill of online auctions with our feature-rich
               platform
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
                 <div
                   key={index}
-                  className="text-center p-6 rounded-lg hover:shadow-lg transition-shadow"
+                  className="text-center p-4 sm:p-6 rounded-lg hover:shadow-lg dark:hover:shadow-2xl transition-all duration-300 hover:transform hover:scale-105 bg-gray-50 dark:bg-gray-700/50"
                 >
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 text-blue-600 rounded-full mb-4">
-                    <Icon className="w-8 h-8" />
+                  <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-full mb-4">
+                    <Icon className="w-6 h-6 sm:w-8 sm:h-8" />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600">{feature.description}</p>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
+                    {feature.description}
+                  </p>
                 </div>
               );
             })}
@@ -111,7 +113,7 @@ const Home = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-gray-900 text-white py-16">
+      <div className="bg-gray-900 dark:bg-gray-950 text-white py-12 sm:py-16 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Start Bidding?</h2>
           <p className="text-xl text-gray-300 mb-8">
