@@ -84,7 +84,7 @@ const App = () => {
                       </ProtectedRoute>
                     }
                   />
-                  <Route path="/leaderboard" element={<Dashboard />} />
+                  <Route path="/leaderboard" element={<Leaderboard />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </div>
