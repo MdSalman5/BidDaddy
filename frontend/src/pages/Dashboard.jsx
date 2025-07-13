@@ -158,10 +158,10 @@ const Dashboard = () => {
                 <div className="p-4 sm:p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                         {stat.title}
                       </p>
-                      <p className="text-3xl font-bold text-gray-900 mt-2">
+                      <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">
                         {stat.value}
                       </p>
                     </div>
