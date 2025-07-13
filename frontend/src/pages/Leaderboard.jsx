@@ -91,7 +91,7 @@ const Leaderboard = () => {
       label: "Top Spenders",
       icon: DollarSign,
       description: "Users who have spent the most on auctions",
-      getValue: (user) => `$${user.moneySpent?.toLocaleString() || 0}`,
+      getValue: (user) => `$${(user?.moneySpent || 0).toLocaleString()}`,
     },
     {
       id: "wins",
