@@ -166,20 +166,24 @@ const Dashboard = () => {
                       </p>
                     </div>
                     <div
-                      className={`w-12 h-12 rounded-xl bg-${stat.color}-100 flex items-center justify-center`}
+                      className={`w-12 h-12 rounded-xl bg-${stat.color}-100 dark:bg-${stat.color}-900/30 flex items-center justify-center`}
                     >
-                      <Icon className={`w-6 h-6 text-${stat.color}-600`} />
+                      <Icon
+                        className={`w-6 h-6 text-${stat.color}-600 dark:text-${stat.color}-400`}
+                      />
                     </div>
                   </div>
                   <div className="mt-4 flex items-center">
                     <span
                       className={`text-sm font-medium ${
-                        stat.isPositive ? "text-green-600" : "text-red-600"
+                        stat.isPositive
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
                       }`}
                     >
                       {stat.change}
                     </span>
-                    <span className="text-sm text-gray-600 ml-2">
+                    <span className="text-sm text-gray-600 dark:text-gray-400 ml-2">
                       from last month
                     </span>
                   </div>
