@@ -20,6 +20,8 @@ import DemoNotification from "./components/DemoNotification";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+// Import global error handler to initialize it
+import "./utils/globalErrorHandler";
 
 const App = () => {
   return (
