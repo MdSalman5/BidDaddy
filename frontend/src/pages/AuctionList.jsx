@@ -160,6 +160,15 @@ const AuctionList = () => {
     return count;
   };
 
+  const clearAllFilters = () => {
+    setSearchTerm("");
+    setSelectedCategory("all");
+    setSelectedCondition("all");
+    setPriceRange({ min: "", max: "" });
+    setSortBy("ending-soon");
+    setAuctionStatus("active");
+  };
+
   if (loading) {
     return <LoadingSpinner />;
   }
