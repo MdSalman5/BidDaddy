@@ -175,23 +175,25 @@ const connectionService = new ConnectionService();
 
 export default connectionService;
 
-// React hook for easier usage
-export const useConnection = () => {
-  const [status, setStatus] = React.useState(
-    connectionService.getConnectionStatus(),
-  );
+// React hook for easier usage - import React in component files that use this
+export const createConnectionHook = (React) => {
+  return () => {
+    const [status, setStatus] = React.useState(
+      connectionService.getConnectionStatus(),
+    );
 
-  React.useEffect(() => {
-    const unsubscribe = connectionService.subscribe((event) => {
-      setStatus(connectionService.getConnectionStatus());
-    });
+    React.useEffect(() => {
+      const unsubscribe = connectionService.subscribe((event) => {
+        setStatus(connectionService.getConnectionStatus());
+      });
 
-    return unsubscribe;
-  }, []);
+      return unsubscribe;
+    }, []);
 
-  return {
-    ...status,
-    forceCheck: () => connectionService.forceHealthCheck(),
-    setDemoMode: (enabled) => connectionService.setDemoMode(enabled),
+    return {
+      ...status,
+      forceCheck: () => connectionService.forceHealthCheck(),
+      setDemoMode: (enabled) => connectionService.setDemoMode(enabled),
+    };
   };
 };
