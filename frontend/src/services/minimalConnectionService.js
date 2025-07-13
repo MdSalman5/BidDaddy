@@ -74,13 +74,12 @@ class MinimalConnectionService {
 
       if (isHealthy) {
         this.updateBackendStatus("online");
-        // Auto-disable demo mode when backend is healthy
-        localStorage.removeItem("useDemoMode");
-        console.info("Backend is healthy - switched to live mode");
+        // Don't automatically remove demo mode, let the services handle fallbacks
+        console.info("Backend is healthy and available");
         this.notifyListeners("backend_available");
       } else {
         this.updateBackendStatus("offline");
-        localStorage.setItem("useDemoMode", "true");
+        console.info("Backend is offline - services will use fallbacks");
       }
     } catch (error) {
       console.warn("Health check failed safely:", error.message);
