@@ -171,7 +171,7 @@ const SideDrawer = () => {
 
         {/* User info */}
         {isAuthenticated && user && (
-          <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+          <div className="p-4 sm:p-6 border-b border-gray-100/50 dark:border-gray-800/50 bg-gray-50/80 dark:bg-gray-800/30 backdrop-blur-sm">
             <div className="flex items-center space-x-4">
               <div className="relative">
                 <img
