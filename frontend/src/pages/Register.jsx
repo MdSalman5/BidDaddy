@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { registerUser, clearError } from "../store/slices/authSlice";
 import { authService } from "../services/authService";
 import { toast } from "react-toastify";
+import ThemeToggle from "../components/ThemeToggle";
 import {
   Eye,
   EyeOff,
