@@ -40,11 +40,13 @@ export function ThemeProvider({
         : "light";
     }
 
-    // Apply theme class
-    root.classList.add(effectiveTheme);
-
     // Add transition class for smooth theme switching
     root.classList.add("theme-transition");
+
+    // Apply theme class with a small delay for better visual feedback
+    requestAnimationFrame(() => {
+      root.classList.add(effectiveTheme);
+    });
 
     // Store the theme
     localStorage.setItem(storageKey, theme);
@@ -52,7 +54,7 @@ export function ThemeProvider({
     // Remove transition class after animation completes
     const timer = setTimeout(() => {
       root.classList.remove("theme-transition");
-    }, 300);
+    }, 350);
 
     return () => clearTimeout(timer);
   }, [theme, storageKey]);
