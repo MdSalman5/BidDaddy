@@ -24,6 +24,7 @@ const App = () => {
     <Provider store={store}>
       <Router>
         <div className="min-h-screen bg-gray-50">
+          <DemoNotification />
           <SideDrawer />
           <div className="lg:ml-80">
             <Routes>
