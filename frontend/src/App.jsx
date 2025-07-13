@@ -29,10 +29,10 @@ const App = () => {
       <ThemeProvider defaultTheme="system" storageKey="auction-theme">
         <ErrorBoundary>
           <Router>
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300 lg:flex">
               <DemoNotification />
               <SideDrawer />
-              <div className="lg:ml-80">
+              <div className="flex-1 lg:overflow-hidden">
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/login" element={<Login />} />
