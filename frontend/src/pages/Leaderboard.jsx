@@ -314,10 +314,12 @@ const Leaderboard = () => {
                       </div>
                     </div>
                     <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-                      {filteredLeaderboard[2]?.name}
+                      {filteredLeaderboard[2]?.name || "Unknown User"}
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {currentCategory.getValue(filteredLeaderboard[2])}
+                      {filteredLeaderboard[2]
+                        ? currentCategory.getValue(filteredLeaderboard[2])
+                        : "N/A"}
                     </p>
                   </div>
                 </div>
