@@ -49,7 +49,17 @@ class ConnectionService {
         throw new Error(`Backend returned ${response.status}`);
       }
     } catch (error) {
-      console.warn("Backend health check failed:", error.message);
+      let errorMessage = "Unknown error";
+
+      if (error.name === "AbortError") {
+        errorMessage = "Request timeout";
+      } else if (error.message.includes("Failed to fetch")) {
+        errorMessage = "Network error or CORS issue";
+      } else {
+        errorMessage = error.message;
+      }
+
+      console.warn("Backend health check failed:", errorMessage);
       this.updateBackendStatus("offline");
       this.retryAttempts++;
 
@@ -58,6 +68,7 @@ class ConnectionService {
         localStorage.setItem("useDemoMode", "true");
         this.notifyListeners("demo_mode_enabled", {
           reason: "backend_unavailable",
+          error: errorMessage,
         });
       }
 
