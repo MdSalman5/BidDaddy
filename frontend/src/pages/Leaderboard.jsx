@@ -259,7 +259,7 @@ const Leaderboard = () => {
         {/* Leaderboard */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
           {/* Top 3 Podium */}
-          {filteredLeaderboard.length >= 3 && (
+          {filteredLeaderboard && filteredLeaderboard.length >= 3 && (
             <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 p-8">
               <div className="max-w-4xl mx-auto">
                 <div className="flex items-end justify-center space-x-8">
