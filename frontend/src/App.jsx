@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -22,66 +17,67 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
-  return (
+    return (
     <Provider store={store}>
       <ThemeProvider defaultTheme="system" storageKey="auction-theme">
-        <Router>
-          <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
-            <DemoNotification />
-            <SideDrawer />
-            <div className="lg:ml-80">
+        <ErrorBoundary>
+          <Router>
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+              <DemoNotification />
+              <SideDrawer />
+              <div className="lg:ml-80">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/auctions" element={<AuctionList />} />
                 <Route path="/auction/:id" element={<AuctionDetail />} />
-                <Route
-                  path="/dashboard"
+                <Route 
+                  path="/dashboard" 
                   element={
                     <ProtectedRoute>
                       <Dashboard />
                     </ProtectedRoute>
-                  }
+                  } 
                 />
-                <Route
-                  path="/my-auctions"
+                <Route 
+                  path="/my-auctions" 
                   element={
                     <ProtectedRoute>
                       <Dashboard />
                     </ProtectedRoute>
-                  }
+                  } 
                 />
-                <Route
-                  path="/my-bids"
+                <Route 
+                  path="/my-bids" 
                   element={
                     <ProtectedRoute>
                       <Dashboard />
                     </ProtectedRoute>
-                  }
+                  } 
                 />
-                <Route
-                  path="/create-auction"
+                <Route 
+                  path="/create-auction" 
                   element={
                     <ProtectedRoute>
                       <Dashboard />
                     </ProtectedRoute>
-                  }
+                  } 
                 />
-                <Route
-                  path="/profile"
+                <Route 
+                  path="/profile" 
                   element={
                     <ProtectedRoute>
                       <Dashboard />
                     </ProtectedRoute>
-                  }
+                  } 
                 />
                 <Route path="/leaderboard" element={<Dashboard />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </div>
           </div>
-          <ToastContainer
+          <ToastContainer 
             position="top-right"
             autoClose={5000}
             hideProgressBar={false}
