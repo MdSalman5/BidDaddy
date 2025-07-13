@@ -110,34 +110,34 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       {/* Hero Section */}
       <div className="bg-gradient-auction text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-            <div>
-              <h1 className="text-4xl font-bold mb-2">
+            <div className="mb-6 md:mb-0">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
                 Welcome back, {user?.userName || "Auction Lover"}! 🎉
               </h1>
-              <p className="text-blue-100 text-lg">
+              <p className="text-blue-100 text-base sm:text-lg">
                 Discover amazing auction items and place your winning bids
               </p>
             </div>
-            <div className="mt-6 md:mt-0 flex space-x-4">
+            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
               <Link
                 to="/auctions"
-                className="inline-flex items-center px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors"
+                className="inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-all duration-300 hover:scale-105 active:scale-95"
               >
-                <Search className="w-5 h-5 mr-2" />
-                Browse Auctions
+                <Search className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="text-sm sm:text-base">Browse Auctions</span>
               </Link>
               {user?.role === "Auctioneer" && (
                 <Link
                   to="/create-auction"
-                  className="inline-flex items-center px-6 py-3 bg-blue-800 text-white font-semibold rounded-lg hover:bg-blue-900 transition-colors"
+                  className="inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-blue-800 text-white font-semibold rounded-lg hover:bg-blue-900 transition-all duration-300 hover:scale-105 active:scale-95"
                 >
-                  <Plus className="w-5 h-5 mr-2" />
-                  Create Auction
+                  <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  <span className="text-sm sm:text-base">Create Auction</span>
                 </Link>
               )}
             </div>
