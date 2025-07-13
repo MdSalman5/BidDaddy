@@ -400,7 +400,7 @@ const Leaderboard = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                       <div className="flex items-center">
                         <Trophy className="w-4 h-4 mr-2 text-yellow-500" />
-                        {user.auctionsWon || 0}
+                        {user?.auctionsWon || 0}
                       </div>
                     </td>
                   </tr>
