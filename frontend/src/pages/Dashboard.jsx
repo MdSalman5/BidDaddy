@@ -1,9 +1,25 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchAllAuctions } from "../store/slices/auctionSlice";
+import { authService } from "../services/authService";
 import AuctionCard from "../components/AuctionCard";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { Search, Filter } from "lucide-react";
+import {
+  Search,
+  TrendingUp,
+  Gavel,
+  Clock,
+  DollarSign,
+  User,
+  Award,
+  ArrowUpRight,
+  Plus,
+  Eye,
+  Heart,
+  Star,
+  Trophy,
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -15,12 +31,66 @@ const Dashboard = () => {
   }, [dispatch]);
 
   const activeAuctions = auctions.filter(
-    (auction) => new Date(auction.endTime) > new Date(),
+    (auction) =>
+      new Date(auction.endTime) > new Date() &&
+      new Date(auction.startTime) <= new Date(),
   );
 
-  const endedAuctions = auctions.filter(
-    (auction) => new Date(auction.endTime) <= new Date(),
-  );
+  const endingSoonAuctions = activeAuctions
+    .filter((auction) => {
+      const timeLeft = new Date(auction.endTime) - new Date();
+      return timeLeft <= 24 * 60 * 60 * 1000; // 24 hours
+    })
+    .sort((a, b) => new Date(a.endTime) - new Date(b.endTime))
+    .slice(0, 4);
+
+  const hotAuctions = activeAuctions
+    .filter((auction) => auction.bids && auction.bids.length >= 5)
+    .sort((a, b) => (b.bids?.length || 0) - (a.bids?.length || 0))
+    .slice(0, 4);
+
+  const recentlyEndedAuctions = auctions
+    .filter((auction) => new Date(auction.endTime) <= new Date())
+    .sort((a, b) => new Date(b.endTime) - new Date(a.endTime))
+    .slice(0, 4);
+
+  const statsCards = [
+    {
+      title: "Active Auctions",
+      value: activeAuctions.length,
+      icon: Gavel,
+      color: "blue",
+      change: "+12%",
+      isPositive: true,
+    },
+    {
+      title: "Total Value",
+      value: `$${activeAuctions.reduce((sum, auction) => sum + (auction.currentBid || auction.startingBid), 0).toLocaleString()}`,
+      icon: DollarSign,
+      color: "green",
+      change: "+8%",
+      isPositive: true,
+    },
+    {
+      title: "Total Bidders",
+      value: activeAuctions.reduce(
+        (sum, auction) => sum + (auction.bids?.length || 0),
+        0,
+      ),
+      icon: User,
+      color: "purple",
+      change: "+15%",
+      isPositive: true,
+    },
+    {
+      title: "Your Wins",
+      value: user?.auctionsWon || 0,
+      icon: Trophy,
+      color: "yellow",
+      change: user?.auctionsWon > 0 ? "+1" : "0",
+      isPositive: true,
+    },
+  ];
 
   if (loading) {
     return <LoadingSpinner />;
@@ -31,7 +101,7 @@ const Dashboard = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-red-600 mb-4">
-            Error Loading Auctions
+            Error Loading Dashboard
           </h2>
           <p className="text-gray-600">{error}</p>
         </div>
@@ -41,89 +111,308 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
+      {/* Hero Section */}
+      <div className="bg-gradient-auction text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Welcome back, {user?.userName}!
+              <h1 className="text-4xl font-bold mb-2">
+                Welcome back, {user?.userName || "Auction Lover"}! 🎉
               </h1>
-              <p className="mt-1 text-sm text-gray-500">
-                Discover amazing auction items and place your bids
+              <p className="text-blue-100 text-lg">
+                Discover amazing auction items and place your winning bids
               </p>
+            </div>
+            <div className="mt-6 md:mt-0 flex space-x-4">
+              <Link
+                to="/auctions"
+                className="inline-flex items-center px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors"
+              >
+                <Search className="w-5 h-5 mr-2" />
+                Browse Auctions
+              </Link>
+              {user?.role === "Auctioneer" && (
+                <Link
+                  to="/create-auction"
+                  className="inline-flex items-center px-6 py-3 bg-blue-800 text-white font-semibold rounded-lg hover:bg-blue-900 transition-colors"
+                >
+                  <Plus className="w-5 h-5 mr-2" />
+                  Create Auction
+                </Link>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Search and Filters */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search auctions..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-          <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-            <Filter className="w-5 h-5 mr-2" />
-            Filters
-          </button>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {statsCards.map((stat) => {
+            const Icon = stat.icon;
+            return (
+              <div key={stat.title} className="card card-hover">
+                <div className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">
+                        {stat.title}
+                      </p>
+                      <p className="text-3xl font-bold text-gray-900 mt-2">
+                        {stat.value}
+                      </p>
+                    </div>
+                    <div
+                      className={`w-12 h-12 rounded-xl bg-${stat.color}-100 flex items-center justify-center`}
+                    >
+                      <Icon className={`w-6 h-6 text-${stat.color}-600`} />
+                    </div>
+                  </div>
+                  <div className="mt-4 flex items-center">
+                    <span
+                      className={`text-sm font-medium ${
+                        stat.isPositive ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {stat.change}
+                    </span>
+                    <span className="text-sm text-gray-600 ml-2">
+                      from last month
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        {/* Active Auctions */}
-        <div className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Active Auctions
+        {/* Quick Actions */}
+        <div className="card">
+          <div className="p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
+              Quick Actions
             </h2>
-            <span className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
-              {activeAuctions.length} active
-            </span>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                {
+                  title: "Browse All",
+                  icon: Search,
+                  path: "/auctions",
+                  color: "blue",
+                },
+                {
+                  title: "Watchlist",
+                  icon: Heart,
+                  path: "/watchlist",
+                  color: "red",
+                },
+                {
+                  title: "My Bids",
+                  icon: Gavel,
+                  path: "/my-bids",
+                  color: "green",
+                },
+                {
+                  title: "Leaderboard",
+                  icon: TrendingUp,
+                  path: "/leaderboard",
+                  color: "purple",
+                },
+              ].map((action) => {
+                const Icon = action.icon;
+                return (
+                  <Link
+                    key={action.title}
+                    to={action.path}
+                    className={`group p-4 rounded-xl border-2 border-${action.color}-100 hover:border-${action.color}-200 hover:bg-${action.color}-50 transition-all duration-200`}
+                  >
+                    <Icon
+                      className={`w-8 h-8 text-${action.color}-600 mb-2 group-hover:scale-110 transition-transform`}
+                    />
+                    <p className="font-semibold text-gray-900">
+                      {action.title}
+                    </p>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
+        </div>
 
-          {activeAuctions.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {activeAuctions.map((auction) => (
+        {/* Ending Soon */}
+        {endingSoonAuctions.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                  <Clock className="w-6 h-6 text-red-600" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Ending Soon
+                  </h2>
+                  <p className="text-gray-600">
+                    Don't miss these opportunities!
+                  </p>
+                </div>
+              </div>
+              <Link
+                to="/auctions?sort=ending-soon"
+                className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
+              >
+                View All
+                <ArrowUpRight className="w-5 h-5 ml-1" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {endingSoonAuctions.map((auction) => (
                 <AuctionCard key={auction._id} auction={auction} />
               ))}
             </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="text-gray-400 text-6xl mb-4">🏷️</div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                No active auctions
-              </h3>
-              <p className="text-gray-500">
-                Check back soon for new auction items!
-              </p>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Recently Ended Auctions */}
-        {endedAuctions.length > 0 && (
+        {/* Hot Auctions */}
+        {hotAuctions.length > 0 && (
           <div>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">
-                Recently Ended
-              </h2>
-              <span className="bg-gray-100 text-gray-800 text-sm font-medium px-3 py-1 rounded-full">
-                {endedAuctions.length} ended
-              </span>
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-orange-600" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Hot Auctions
+                  </h2>
+                  <p className="text-gray-600">
+                    Popular items with active bidding
+                  </p>
+                </div>
+              </div>
+              <Link
+                to="/auctions?sort=most-bids"
+                className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
+              >
+                View All
+                <ArrowUpRight className="w-5 h-5 ml-1" />
+              </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {endedAuctions.slice(0, 8).map((auction) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {hotAuctions.map((auction) => (
+                <AuctionCard key={auction._id} auction={auction} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Recently Ended */}
+        {recentlyEndedAuctions.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
+                  <Award className="w-6 h-6 text-gray-600" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Recently Ended
+                  </h2>
+                  <p className="text-gray-600">
+                    See the latest auction results
+                  </p>
+                </div>
+              </div>
+              <Link
+                to="/auctions?status=ended"
+                className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
+              >
+                View All
+                <ArrowUpRight className="w-5 h-5 ml-1" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {recentlyEndedAuctions.map((auction) => (
                 <AuctionCard
                   key={auction._id}
                   auction={auction}
                   isEnded={true}
                 />
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* No Active Auctions */}
+        {activeAuctions.length === 0 && (
+          <div className="text-center py-16">
+            <div className="text-gray-400 text-6xl mb-6">🎨</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              No Active Auctions
+            </h3>
+            <p className="text-gray-600 mb-8 max-w-md mx-auto">
+              There are currently no active auctions. Check back soon for new
+              items, or create your own auction!
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/auctions" className="btn-primary">
+                Browse All Auctions
+              </Link>
+              {user?.role === "Auctioneer" && (
+                <Link to="/create-auction" className="btn-secondary">
+                  Create Auction
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* User Stats for Authenticated Users */}
+        {user && (
+          <div className="card">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Your Activity
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                  <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <DollarSign className="w-6 h-6 text-white" />
+                  </div>
+                  <p className="text-2xl font-bold text-blue-600">
+                    ${user.moneySpent || 0}
+                  </p>
+                  <p className="text-sm text-gray-600">Total Spent</p>
+                </div>
+
+                <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Trophy className="w-6 h-6 text-white" />
+                  </div>
+                  <p className="text-2xl font-bold text-green-600">
+                    {user.auctionsWon || 0}
+                  </p>
+                  <p className="text-sm text-gray-600">Auctions Won</p>
+                </div>
+
+                <div className="text-center p-4 bg-purple-50 rounded-lg">
+                  <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Star className="w-6 h-6 text-white" />
+                  </div>
+                  <p className="text-2xl font-bold text-purple-600">
+                    {user.role === "Auctioneer"
+                      ? user.unpaidCommission || 0
+                      : "—"}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {user.role === "Auctioneer"
+                      ? "Unpaid Commission"
+                      : "Rating"}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         )}
