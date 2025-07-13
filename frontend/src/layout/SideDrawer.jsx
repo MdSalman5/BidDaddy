@@ -180,11 +180,6 @@ const SideDrawer = () => {
           )}
         </div>
       </div>
-
-      {/* Main content offset for desktop */}
-      <div className="lg:ml-64">
-        {/* Content will be rendered here by the router */}
-      </div>
     </>
   );
 };
