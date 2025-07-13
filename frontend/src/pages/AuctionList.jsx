@@ -492,10 +492,10 @@ const AuctionList = () => {
             ) : (
               <div className="text-center py-16">
                 <div className="text-gray-400 text-6xl mb-6">🔍</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
                   No auctions found
                 </h3>
-                <p className="text-gray-600 mb-6">
+                <p className="text-gray-600 dark:text-gray-400 mb-6">
                   Try adjusting your filters or search terms to find more
                   auctions.
                 </p>
