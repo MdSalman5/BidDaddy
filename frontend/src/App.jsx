@@ -15,6 +15,7 @@ import Dashboard from "./pages/Dashboard";
 import AuctionList from "./pages/AuctionList";
 import AuctionDetail from "./pages/AuctionDetail";
 import ProtectedRoute from "./components/ProtectedRoute";
+import DemoNotification from "./components/DemoNotification";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
