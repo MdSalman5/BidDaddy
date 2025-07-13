@@ -53,16 +53,17 @@ const DemoNotification = () => {
     localStorage.setItem("demoNotificationDismissed", "true");
   };
 
-  const handleToggleDemoMode = async () => {
+    const handleToggleDemoMode = async () => {
     const currentMode = authService.isDemoMode();
 
     if (currentMode) {
       // Switching to live mode - check backend first
-      const isBackendHealthy = await connectionService.forceHealthCheck();
+      try {
+        const isBackendHealthy = await minimalConnectionService.forceHealthCheck();
 
-      if (isBackendHealthy) {
-        authService.toggleDemoMode(false);
-        connectionService.setDemoMode(false);
+        if (isBackendHealthy) {
+          authService.toggleDemoMode(false);
+          minimalConnectionService.setDemoMode(false);
         setIsVisible(false);
         localStorage.removeItem("demoNotificationDismissed");
         window.location.reload();
