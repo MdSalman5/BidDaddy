@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Gavel, TrendingUp, Shield, Zap } from "lucide-react";
+import FloatingThemeToggle from "../components/FloatingThemeToggle";
 
 const Home = () => {
   const { isAuthenticated } = useSelector((state) => state.auth);
