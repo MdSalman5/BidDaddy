@@ -17,11 +17,42 @@ class SafeConnectionService {
     window.addEventListener("online", this.handleOnline.bind(this));
     window.addEventListener("offline", this.handleOffline.bind(this));
 
-    // Start health checks with delay to avoid immediate errors
+    // Check if we should skip health checks entirely
+    if (this.shouldSkipHealthChecks()) {
+      console.info("Health checks disabled - using demo mode");
+      localStorage.setItem("useDemoMode", "true");
+      this.updateBackendStatus("offline");
+      return;
+    }
+
+    // Start health checks with longer delay to avoid startup interference
     setTimeout(() => {
       this.startHealthChecks();
       this.checkBackendHealth();
-    }, 2000);
+    }, 5000);
+  }
+
+  shouldSkipHealthChecks() {
+    // Skip in production environments
+    const hostname = window.location.hostname;
+    if (hostname !== "localhost" && hostname !== "127.0.0.1") {
+      return true;
+    }
+
+    // Skip if explicitly disabled
+    if (localStorage.getItem("disableHealthChecks") === "true") {
+      return true;
+    }
+
+    // Skip if we've had too many consecutive failures recently
+    const lastFailures = parseInt(
+      localStorage.getItem("consecutiveHealthCheckFailures") || "0",
+    );
+    if (lastFailures >= 5) {
+      return true;
+    }
+
+    return false;
   }
 
   async checkBackendHealth() {
