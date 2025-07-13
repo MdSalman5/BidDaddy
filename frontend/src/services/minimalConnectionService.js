@@ -11,23 +11,25 @@ class MinimalConnectionService {
   }
 
   init() {
-    // Always start in demo mode to be safe
-    localStorage.setItem("useDemoMode", "true");
-    this.updateBackendStatus("offline");
+    // Check if backend is available before defaulting to demo mode
+    this.updateBackendStatus("checking");
 
     // Listen for network events
     window.addEventListener("online", () => {
       this.isOnline = true;
       this.notifyListeners("network_online");
+      // Check backend when network comes online
+      this.performSafeHealthCheck();
     });
 
     window.addEventListener("offline", () => {
       this.isOnline = false;
       this.updateBackendStatus("offline");
+      localStorage.setItem("useDemoMode", "true");
       this.notifyListeners("network_offline");
     });
 
-    // Only enable health checks if explicitly requested
+    // Enable health checks immediately
     this.enableHealthChecks();
   }
 
