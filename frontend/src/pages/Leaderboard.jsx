@@ -105,7 +105,7 @@ const Leaderboard = () => {
       label: "Most Active",
       icon: Gavel,
       description: "Users with the highest bidding activity",
-      getValue: (user) => `${user.totalBids || 0} bids`,
+      getValue: (user) => `${user?.totalBids || 0} bids`,
     },
   ];
 
