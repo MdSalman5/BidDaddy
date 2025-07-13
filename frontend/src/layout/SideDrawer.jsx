@@ -145,22 +145,26 @@ const SideDrawer = () => {
         } lg:static lg:inset-0 lg:w-80 xl:w-[22rem] border-r border-gray-200/50 dark:border-gray-800/50`}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between h-20 px-6 border-b border-gray-100 dark:border-gray-800 bg-gradient-auction">
-          <Link to="/" className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center shadow-lg">
-              <Gavel className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+        <div className="flex items-center justify-between h-16 sm:h-20 px-4 sm:px-6 border-b border-gray-100/50 dark:border-gray-800/50 bg-gradient-auction">
+          <Link to="/" className="flex items-center space-x-2 sm:space-x-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center shadow-lg">
+              <Gavel className="w-4 h-4 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">BidDaddy</h1>
-              <p className="text-blue-100 text-xs">Premium Auctions</p>
+              <h1 className="text-lg sm:text-2xl font-bold text-white">
+                BidDaddy
+              </h1>
+              <p className="text-blue-100 text-xs hidden sm:block">
+                Premium Auctions
+              </p>
             </div>
           </Link>
           <div className="lg:hidden">
             <button
               onClick={() => setIsOpen(false)}
-              className="text-white hover:text-blue-100 transition-colors"
+              className="text-white hover:text-blue-100 transition-colors p-1"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
           </div>
         </div>
