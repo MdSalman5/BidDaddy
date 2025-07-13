@@ -68,7 +68,7 @@ const App = () => {
                     path="/create-auction"
                     element={
                       <ProtectedRoute>
-                        <Dashboard />
+                        <CreateAuction />
                       </ProtectedRoute>
                     }
                   />
