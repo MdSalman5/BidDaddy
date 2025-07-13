@@ -12,6 +12,8 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import AuctionList from "./pages/AuctionList";
+import AuctionDetail from "./pages/AuctionDetail";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -22,11 +24,13 @@ const App = () => {
       <Router>
         <div className="min-h-screen bg-gray-50">
           <SideDrawer />
-          <div className="lg:ml-64">
+          <div className="lg:ml-80">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/auctions" element={<AuctionList />} />
+              <Route path="/auction/:id" element={<AuctionDetail />} />
               <Route
                 path="/dashboard"
                 element={
@@ -35,11 +39,55 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/my-auctions"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/my-bids"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/create-auction"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/leaderboard" element={<Dashboard />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
         </div>
-        <ToastContainer position="top-right" />
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </Router>
     </Provider>
   );
