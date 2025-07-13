@@ -4,6 +4,7 @@ import { fetchAllAuctions } from "../store/slices/auctionSlice";
 import AuctionCard from "../components/AuctionCard";
 import LoadingSpinner from "../components/LoadingSpinner";
 import FloatingThemeToggle from "../components/FloatingThemeToggle";
+import FilterModal from "../components/FilterModal";
 import {
   Search,
   Filter,
