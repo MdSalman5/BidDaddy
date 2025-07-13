@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser, getUserProfile } from "../store/slices/authSlice";
+import { useTheme } from "../contexts/ThemeContext";
+import ThemeToggle from "../components/ThemeToggle";
 import {
   Home,
   Gavel,
@@ -19,6 +21,8 @@ import {
   BarChart3,
   Heart,
   CreditCard,
+  Shield,
+  Star,
 } from "lucide-react";
 import { toast } from "react-toastify";
 
@@ -27,6 +31,7 @@ const SideDrawer = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { theme, getEffectiveTheme } = useTheme();
 
   const { user, isAuthenticated, loading } = useSelector((state) => state.auth);
 
@@ -115,12 +120,12 @@ const SideDrawer = () => {
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="bg-white p-3 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200"
+          className="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-200"
         >
           {isOpen ? (
-            <X className="w-6 h-6 text-gray-700" />
+            <X className="w-6 h-6 text-gray-700 dark:text-gray-300" />
           ) : (
-            <Menu className="w-6 h-6 text-gray-700" />
+            <Menu className="w-6 h-6 text-gray-700 dark:text-gray-300" />
           )}
         </button>
       </div>
@@ -135,15 +140,15 @@ const SideDrawer = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-80 bg-white shadow-2xl transform transition-all duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-80 bg-white dark:bg-gray-900 shadow-2xl transform transition-all duration-300 ease-in-out lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:static lg:inset-0 border-r border-gray-100`}
+        } lg:static lg:inset-0 border-r border-gray-100 dark:border-gray-800`}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between h-20 px-6 border-b border-gray-100 bg-gradient-auction">
+        <div className="flex items-center justify-between h-20 px-6 border-b border-gray-100 dark:border-gray-800 bg-gradient-auction">
           <Link to="/" className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-              <Gavel className="w-6 h-6 text-blue-600" />
+            <div className="w-10 h-10 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center shadow-lg">
+              <Gavel className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">BidDaddy</h1>
@@ -162,26 +167,26 @@ const SideDrawer = () => {
 
         {/* User info */}
         {isAuthenticated && user && (
-          <div className="p-6 border-b border-gray-100 bg-gray-50">
+          <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
             <div className="flex items-center space-x-4">
               <div className="relative">
                 <img
                   src={user.profileImage?.url || "/default-avatar.png"}
                   alt={user.userName}
-                  className="w-14 h-14 rounded-xl object-cover border-2 border-white shadow-md"
+                  className="w-14 h-14 rounded-xl object-cover border-2 border-white dark:border-gray-700 shadow-md"
                 />
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-white rounded-full"></div>
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-white dark:border-gray-700 rounded-full"></div>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-gray-900 truncate">
+                <p className="font-semibold text-gray-900 dark:text-gray-100 truncate">
                   {user.userName}
                 </p>
                 <div className="flex items-center space-x-2">
                   <span
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       user.role === "Auctioneer"
-                        ? "bg-purple-100 text-purple-800"
-                        : "bg-blue-100 text-blue-800"
+                        ? "bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-300"
+                        : "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300"
                     }`}
                   >
                     {user.role === "Auctioneer" ? (
@@ -192,7 +197,7 @@ const SideDrawer = () => {
                     {user.role}
                   </span>
                 </div>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   ${user.moneySpent || 0} spent
                 </p>
               </div>
@@ -202,19 +207,23 @@ const SideDrawer = () => {
 
         {/* Quick Stats */}
         {isAuthenticated && user && (
-          <div className="p-6 border-b border-gray-100">
+          <div className="p-6 border-b border-gray-100 dark:border-gray-800">
             <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-3 bg-blue-50 rounded-lg">
-                <p className="text-2xl font-bold text-blue-600">
+              <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
+                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                   {user.auctionsWon || 0}
                 </p>
-                <p className="text-xs text-gray-600">Auctions Won</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  Auctions Won
+                </p>
               </div>
-              <div className="text-center p-3 bg-green-50 rounded-lg">
-                <p className="text-2xl font-bold text-green-600">
+              <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-100 dark:border-green-800">
+                <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {user.unpaidCommission || 0}
                 </p>
-                <p className="text-xs text-gray-600">Commissions</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  Commissions
+                </p>
               </div>
             </div>
           </div>
@@ -232,25 +241,25 @@ const SideDrawer = () => {
                 onClick={() => setIsOpen(false)}
                 className={`group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ease-in-out ${
                   isActive
-                    ? "bg-blue-50 text-blue-700 shadow-sm border border-blue-100"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 shadow-sm border border-blue-100 dark:border-blue-800"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100"
                 }`}
               >
                 <Icon
                   className={`mr-4 flex-shrink-0 h-5 w-5 transition-colors ${
                     isActive
-                      ? "text-blue-600"
-                      : "text-gray-400 group-hover:text-gray-600"
+                      ? "text-blue-600 dark:text-blue-400"
+                      : "text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300"
                   }`}
                 />
                 <div className="flex-1 min-w-0">
                   <p className="truncate">{item.name}</p>
-                  <p className="text-xs text-gray-500 truncate">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                     {item.description}
                   </p>
                 </div>
                 {isActive && (
-                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full animate-pulse"></div>
                 )}
               </Link>
             );
@@ -258,11 +267,19 @@ const SideDrawer = () => {
         </nav>
 
         {/* Bottom section */}
-        <div className="border-t border-gray-100 p-4 space-y-4">
+        <div className="border-t border-gray-100 dark:border-gray-800 p-4 space-y-4">
+          {/* Theme Toggle */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Theme
+            </span>
+            <ThemeToggle variant="simple" />
+          </div>
+
           {/* Notifications */}
           {isAuthenticated && (
-            <button className="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-600 rounded-xl hover:bg-gray-50 transition-colors group">
-              <Bell className="mr-4 h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+            <button className="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
+              <Bell className="mr-4 h-5 w-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300" />
               <span className="flex-1 text-left">Notifications</span>
               <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1">
                 3
@@ -274,7 +291,7 @@ const SideDrawer = () => {
           {isAuthenticated ? (
             <button
               onClick={handleLogout}
-              className="w-full flex items-center px-4 py-3 text-sm font-medium text-red-600 rounded-xl hover:bg-red-50 transition-colors group"
+              className="w-full flex items-center px-4 py-3 text-sm font-medium text-red-600 dark:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group"
             >
               <LogOut className="mr-4 h-5 w-5" />
               Sign out
@@ -297,6 +314,23 @@ const SideDrawer = () => {
               </Link>
             </div>
           )}
+
+          {/* Footer info */}
+          <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+            <div className="flex items-center justify-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
+              <div className="flex items-center space-x-1">
+                <Shield className="w-3 h-3" />
+                <span>Secure</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Star className="w-3 h-3" />
+                <span>4.9/5</span>
+              </div>
+            </div>
+            <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-2">
+              © 2024 BidDaddy. All rights reserved.
+            </p>
+          </div>
         </div>
       </div>
     </>
