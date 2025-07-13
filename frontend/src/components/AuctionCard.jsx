@@ -136,25 +136,25 @@ const AuctionCard = ({ auction, isEnded = false, showWatchlist = true }) => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       </div>
 
-      <div className="p-6">
+      <div className="p-4 sm:p-5 md:p-6">
         {/* Category */}
-        <div className="flex items-center justify-between mb-3">
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+        <div className="flex items-center justify-between mb-2 sm:mb-3">
+          <span className="inline-flex items-center px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-md text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
             {auction.category || "General"}
           </span>
-          <span className="text-xs text-gray-500 flex items-center">
+          <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
             <MapPin className="w-3 h-3 mr-1" />
-            Online
+            <span className="hidden sm:inline">Online</span>
           </span>
         </div>
 
         {/* Title */}
-        <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+        <h3 className="font-bold text-base sm:text-lg text-gray-900 dark:text-gray-100 mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
           {auction.title}
         </h3>
 
         {/* Description */}
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
+        <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 sm:mb-4 line-clamp-2 leading-relaxed">
           {auction.description}
         </p>
 
