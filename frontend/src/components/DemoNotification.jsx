@@ -53,27 +53,32 @@ const DemoNotification = () => {
     localStorage.setItem("demoNotificationDismissed", "true");
   };
 
-    const handleToggleDemoMode = async () => {
+  const handleToggleDemoMode = async () => {
     const currentMode = authService.isDemoMode();
 
     if (currentMode) {
       // Switching to live mode - check backend first
       try {
-        const isBackendHealthy = await minimalConnectionService.forceHealthCheck();
+        const isBackendHealthy =
+          await minimalConnectionService.forceHealthCheck();
 
         if (isBackendHealthy) {
           authService.toggleDemoMode(false);
           minimalConnectionService.setDemoMode(false);
-        setIsVisible(false);
-        localStorage.removeItem("demoNotificationDismissed");
-        window.location.reload();
-      } else {
-        alert("Backend server is not available. Cannot switch to live mode.");
+          setIsVisible(false);
+          localStorage.removeItem("demoNotificationDismissed");
+          window.location.reload();
+        } else {
+          alert("Backend server is not available. Cannot switch to live mode.");
+        }
+      } catch (error) {
+        console.warn("Error checking backend health:", error);
+        alert("Unable to check backend status. Please try again later.");
       }
     } else {
       // Switching to demo mode
       authService.toggleDemoMode(true);
-      connectionService.setDemoMode(true);
+      minimalConnectionService.setDemoMode(true);
       setIsVisible(true);
       window.location.reload();
     }
@@ -187,13 +192,10 @@ const DemoNotification = () => {
               </button>
             </div>
 
-            {/* Last health check info */}
-            {connectionStatus.lastHealthCheck && (
+            {/* Health check status */}
+            {!connectionStatus.healthCheckEnabled && (
               <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                Last checked:{" "}
-                {new Date(
-                  connectionStatus.lastHealthCheck,
-                ).toLocaleTimeString()}
+                Health checks disabled for stability
               </div>
             )}
           </div>
