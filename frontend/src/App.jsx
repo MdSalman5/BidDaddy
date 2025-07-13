@@ -23,11 +23,12 @@ import "react-toastify/dist/ReactToastify.css";
 const App = () => {
   return (
     <Provider store={store}>
-      <Router>
-        <div className="min-h-screen bg-gray-50">
-          <DemoNotification />
-          <SideDrawer />
-          <div className="lg:ml-80">
+      <ThemeProvider defaultTheme="system" storageKey="auction-theme">
+        <Router>
+          <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+            <DemoNotification />
+            <SideDrawer />
+            <div className="lg:ml-80">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
