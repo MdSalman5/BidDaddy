@@ -20,6 +20,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import FloatingThemeToggle from "../components/FloatingThemeToggle";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
