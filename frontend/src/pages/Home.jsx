@@ -32,6 +32,8 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+      <FloatingThemeToggle position="top-right" variant="modern" />
+
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-700 dark:from-blue-800 dark:to-purple-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
