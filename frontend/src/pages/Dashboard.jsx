@@ -196,7 +196,7 @@ const Dashboard = () => {
         {/* Quick Actions */}
         <div className="card">
           <div className="p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
               Quick Actions
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
