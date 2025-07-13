@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchAllAuctions } from "../store/slices/auctionSlice";
 import AuctionCard from "../components/AuctionCard";
 import LoadingSpinner from "../components/LoadingSpinner";
+import FloatingThemeToggle from "../components/FloatingThemeToggle";
 import {
   Search,
   Filter,
