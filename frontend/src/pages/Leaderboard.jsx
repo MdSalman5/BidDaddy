@@ -373,10 +373,10 @@ const Leaderboard = () => {
                         </div>
                         <div>
                           <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                            {user.name}
+                            {user?.name || "Unknown User"}
                           </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {user.email}
+                            {user?.email || "No email"}
                           </div>
                         </div>
                       </div>
