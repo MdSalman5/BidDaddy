@@ -203,9 +203,24 @@ const AuctionList = () => {
               </p>
             </div>
 
-            {/* Status Tabs */}
-            <div className="mt-4 md:mt-0">
-              <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+            {/* Controls */}
+            <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-4">
+              {/* Filter Button */}
+              <button
+                onClick={() => setShowFilterModal(true)}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white font-medium rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
+              >
+                <Filter className="w-4 h-4 mr-2" />
+                Filters
+                {getActiveFilterCount() > 0 && (
+                  <span className="ml-2 px-2 py-1 bg-blue-800 text-xs rounded-full">
+                    {getActiveFilterCount()}
+                  </span>
+                )}
+              </button>
+
+              {/* Status Tabs */}
+              <div className="flex space-x-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
                 {[
                   {
                     key: "active",
@@ -232,10 +247,10 @@ const AuctionList = () => {
                   <button
                     key={status.key}
                     onClick={() => setAuctionStatus(status.key)}
-                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                    className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                       auctionStatus === status.key
-                        ? "bg-white text-blue-600 shadow-sm"
-                        : "text-gray-600 hover:text-gray-900"
+                        ? "bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm"
+                        : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
                     }`}
                   >
                     {status.label} ({status.count})
