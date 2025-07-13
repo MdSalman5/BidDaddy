@@ -128,7 +128,7 @@ const AuctionCard = ({ auction, isEnded = false, showWatchlist = true }) => {
         <img
           src={auction.image?.url || "/placeholder-image.jpg"}
           alt={auction.title}
-          className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105"
+          className="w-full h-48 sm:h-52 md:h-56 object-cover transition-transform duration-300 group-hover:scale-105"
           onError={(e) => {
             e.target.src = "/placeholder-image.jpg";
           }}
