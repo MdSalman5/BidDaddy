@@ -86,17 +86,17 @@ const AuctionCard = ({ auction, isEnded = false, showWatchlist = true }) => {
 
   return (
     <div
-      className={`card card-hover group relative overflow-hidden ${isEnded ? "opacity-80" : ""}`}
+      className={`card card-hover group relative overflow-hidden transition-all duration-300 ${isEnded ? "opacity-80" : ""} hover:scale-[1.02] active:scale-[0.98]`}
     >
       {/* Auction Status Badge */}
-      <div className="absolute top-4 left-4 z-10">
+      <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-10">
         <span
-          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+          className={`inline-flex items-center px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
             isEnded
-              ? "bg-gray-900 text-white"
+              ? "bg-gray-900/90 text-white"
               : auction.currentBid > auction.startingBid
-                ? "bg-green-500 text-white"
-                : "bg-blue-500 text-white"
+                ? "bg-green-500/90 text-white"
+                : "bg-blue-500/90 text-white"
           }`}
         >
           {isEnded
@@ -111,20 +111,20 @@ const AuctionCard = ({ auction, isEnded = false, showWatchlist = true }) => {
       {showWatchlist && !isEnded && (
         <button
           onClick={handleWatchlistToggle}
-          className="absolute top-4 right-4 z-10 w-10 h-10 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg"
+          className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10 w-8 h-8 sm:w-10 sm:h-10 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg hover:scale-110 active:scale-95"
         >
           <Heart
-            className={`w-5 h-5 transition-colors ${
+            className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors ${
               isWatched
                 ? "text-red-500 fill-current"
-                : "text-gray-600 hover:text-red-500"
+                : "text-gray-600 dark:text-gray-400 hover:text-red-500"
             }`}
           />
         </button>
       )}
 
       {/* Image */}
-      <div className="relative overflow-hidden bg-gray-100">
+      <div className="relative overflow-hidden bg-gray-100 dark:bg-gray-800">
         <img
           src={auction.image?.url || "/placeholder-image.jpg"}
           alt={auction.title}
