@@ -80,7 +80,7 @@ const App = () => {
                     path="/profile"
                     element={
                       <ProtectedRoute>
-                        <Dashboard />
+                        <Profile />
                       </ProtectedRoute>
                     }
                   />
