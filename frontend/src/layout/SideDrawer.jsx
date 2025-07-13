@@ -269,11 +269,11 @@ const SideDrawer = () => {
         {/* Bottom section */}
         <div className="border-t border-gray-100 dark:border-gray-800 p-4 space-y-4">
           {/* Theme Toggle */}
-          <div className="flex items-center justify-between">
+          <div className="space-y-2">
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Theme
             </span>
-            <ThemeToggle variant="simple" />
+            <ThemeToggle variant="modern" className="w-full" />
           </div>
 
           {/* Notifications */}
