@@ -361,9 +361,9 @@ const Leaderboard = () => {
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div
-                        className={`inline-flex items-center justify-center w-10 h-10 rounded-full ${getRankBadge(user.rank)}`}
+                        className={`inline-flex items-center justify-center w-10 h-10 rounded-full ${getRankBadge(user?.rank || index + 1)}`}
                       >
-                        {getRankIcon(user.rank)}
+                        {getRankIcon(user?.rank || index + 1)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
