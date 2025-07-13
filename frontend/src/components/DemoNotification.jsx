@@ -32,8 +32,8 @@ const DemoNotification = () => {
     checkDemoMode();
 
     // Subscribe to connection events
-    const unsubscribe = connectionService.subscribe((event) => {
-      setConnectionStatus(connectionService.getConnectionStatus());
+    const unsubscribe = safeConnectionService.subscribe((event) => {
+      setConnectionStatus(safeConnectionService.getConnectionStatus());
 
       if (event.type === "demo_mode_enabled") {
         setIsVisible(true);
