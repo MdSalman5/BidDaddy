@@ -15,7 +15,7 @@ const DemoNotification = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState(
-    safeConnectionService.getConnectionStatus(),
+    minimalConnectionService.getConnectionStatus(),
   );
 
   useEffect(() => {
