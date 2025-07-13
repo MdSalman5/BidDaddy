@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import SideDrawer from "./layout/SideDrawer";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
