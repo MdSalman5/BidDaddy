@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { authService } from "../services/authService";
-import safeConnectionService from "../services/safeConnectionService";
+import minimalConnectionService from "../services/minimalConnectionService";
 import {
   X,
   Info,
