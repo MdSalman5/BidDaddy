@@ -16,6 +16,7 @@ import Dashboard from "./pages/Dashboard";
 import AuctionList from "./pages/AuctionList";
 import AuctionDetail from "./pages/AuctionDetail";
 import CreateAuction from "./pages/CreateAuction";
+import MyAuctions from "./pages/MyAuctions";
 import ProtectedRoute from "./components/ProtectedRoute";
 import DemoNotification from "./components/DemoNotification";
 import ErrorBoundary from "./components/ErrorBoundary";
