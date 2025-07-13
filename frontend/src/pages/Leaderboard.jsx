@@ -77,11 +77,13 @@ const Leaderboard = () => {
     }
   };
 
-  const filteredLeaderboard = leaderboard.filter(
-    (user) =>
-      (user.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (user.email || "").toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  const filteredLeaderboard = (leaderboard || []).filter((user) => {
+    if (!user) return false;
+    const userName = (user.name || "").toLowerCase();
+    const userEmail = (user.email || "").toLowerCase();
+    const search = (searchTerm || "").toLowerCase();
+    return userName.includes(search) || userEmail.includes(search);
+  });
 
   const categories = [
     {
