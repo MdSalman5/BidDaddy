@@ -30,6 +30,7 @@ const AuctionList = () => {
   const [sortBy, setSortBy] = useState("ending-soon");
   const [viewMode, setViewMode] = useState("grid");
   const [showFilters, setShowFilters] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
   const [auctionStatus, setAuctionStatus] = useState("active");
 
   useEffect(() => {
