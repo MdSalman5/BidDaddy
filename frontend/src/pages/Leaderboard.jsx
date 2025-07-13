@@ -98,7 +98,7 @@ const Leaderboard = () => {
       label: "Most Wins",
       icon: Trophy,
       description: "Users with the highest number of auction wins",
-      getValue: (user) => `${user.auctionsWon || 0} wins`,
+      getValue: (user) => `${user?.auctionsWon || 0} wins`,
     },
     {
       id: "bids",
