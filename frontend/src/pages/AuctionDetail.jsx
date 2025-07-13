@@ -26,6 +26,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import LoadingSpinner from "../components/LoadingSpinner";
+import FloatingThemeToggle from "../components/FloatingThemeToggle";
 
 const AuctionDetail = () => {
   const { id } = useParams();
