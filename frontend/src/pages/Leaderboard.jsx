@@ -111,23 +111,25 @@ const Leaderboard = () => {
 
   const currentCategory = categories.find((cat) => cat.id === category);
 
+  const safeLeaderboard = leaderboard || [];
+
   const stats = [
     {
       label: "Total Users",
-      value: leaderboard.length,
+      value: safeLeaderboard.length,
       icon: User,
       color: "blue",
     },
     {
       label: "Total Spent",
-      value: `$${leaderboard.reduce((sum, user) => sum + (user.moneySpent || 0), 0).toLocaleString()}`,
+      value: `$${safeLeaderboard.reduce((sum, user) => sum + ((user && user.moneySpent) || 0), 0).toLocaleString()}`,
       icon: DollarSign,
       color: "green",
     },
     {
       label: "Total Auctions Won",
-      value: leaderboard.reduce(
-        (sum, user) => sum + (user.auctionsWon || 0),
+      value: safeLeaderboard.reduce(
+        (sum, user) => sum + ((user && user.auctionsWon) || 0),
         0,
       ),
       icon: Trophy,
@@ -135,7 +137,7 @@ const Leaderboard = () => {
     },
     {
       label: "Average Spend",
-      value: `$${Math.round(leaderboard.reduce((sum, user) => sum + (user.moneySpent || 0), 0) / Math.max(leaderboard.length, 1)).toLocaleString()}`,
+      value: `$${Math.round(safeLeaderboard.reduce((sum, user) => sum + ((user && user.moneySpent) || 0), 0) / Math.max(safeLeaderboard.length, 1)).toLocaleString()}`,
       icon: TrendingUp,
       color: "purple",
     },
