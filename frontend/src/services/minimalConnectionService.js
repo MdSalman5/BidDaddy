@@ -11,7 +11,7 @@ class MinimalConnectionService {
   }
 
   init() {
-    // Check if backend is available before defaulting to demo mode
+    // Start checking backend status
     this.updateBackendStatus("checking");
 
     // Listen for network events
@@ -25,7 +25,6 @@ class MinimalConnectionService {
     window.addEventListener("offline", () => {
       this.isOnline = false;
       this.updateBackendStatus("offline");
-      localStorage.setItem("useDemoMode", "true");
       this.notifyListeners("network_offline");
     });
 
