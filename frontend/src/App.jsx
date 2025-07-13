@@ -62,7 +62,7 @@ const App = () => {
                     path="/my-bids"
                     element={
                       <ProtectedRoute>
-                        <Dashboard />
+                        <MyBids />
                       </ProtectedRoute>
                     }
                   />
