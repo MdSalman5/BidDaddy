@@ -11,6 +11,7 @@ import bidRouter from "./router/bidRoutes.js";
 import commissionRouter from "./router/commissionRouter.js";
 import superAdminRouter from "./router/superAdminRoutes.js";
 import healthRouter from "./router/healthRoutes.js";
+import demoRouter from "./router/demoRoutes.js";
 import { endedAuctionCron } from "./automation/endedAuctionCron.js";
 import { verifyCommissionCron } from "./automation/verifyCommissionCron.js";
 
