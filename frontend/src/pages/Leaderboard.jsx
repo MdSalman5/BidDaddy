@@ -389,12 +389,12 @@ const Leaderboard = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          user.role === "Auctioneer"
+                          (user?.role || "Bidder") === "Auctioneer"
                             ? "bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300"
                             : "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300"
                         }`}
                       >
-                        {user.role || "Bidder"}
+                        {user?.role || "Bidder"}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
