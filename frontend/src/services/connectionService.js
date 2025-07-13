@@ -27,13 +27,19 @@ class ConnectionService {
 
   async checkBackendHealth() {
     try {
+      // Create AbortController for timeout since fetch doesn't have a timeout option
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
       const response = await fetch("http://localhost:3000/api/v1/health", {
         method: "GET",
-        timeout: 5000,
+        signal: controller.signal,
         headers: {
           Accept: "application/json",
         },
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         this.updateBackendStatus("online");
