@@ -235,7 +235,7 @@ body {
 
 /* Card styles */
 .card {
-  @apply bg-white rounded-xl shadow-auction border border-gray-100 overflow-hidden transition-all duration-300 ease-in-out;
+  @apply bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 ease-in-out;
 }
 
 .card-hover {
