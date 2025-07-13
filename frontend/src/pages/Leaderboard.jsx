@@ -352,7 +352,7 @@ const Leaderboard = () => {
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredLeaderboard.map((user, index) => (
                   <tr
-                    key={user._id}
+                    key={user?._id || `user-${index}`}
                     className={`hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${
                       index < 3
                         ? "bg-gradient-to-r from-yellow-50/30 to-orange-50/30 dark:from-yellow-900/10 dark:to-orange-900/10"
