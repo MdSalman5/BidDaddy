@@ -140,9 +140,9 @@ const SideDrawer = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-72 sm:w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-2xl transform transition-all duration-300 ease-in-out lg:translate-x-0 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:static lg:inset-0 lg:w-80 xl:w-[22rem] border-r border-gray-200/50 dark:border-gray-800/50`}
+        className={`fixed inset-y-0 left-0 z-50 w-72 sm:w-80 lg:w-80 xl:w-[22rem] bg-white dark:bg-gray-900 lg:bg-white/95 lg:dark:bg-gray-900/95 lg:backdrop-blur-xl shadow-2xl transform transition-all duration-300 ease-in-out border-r border-gray-200 dark:border-gray-800 lg:border-gray-200/50 lg:dark:border-gray-800/50 ${
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        } lg:static lg:inset-0`}
       >
         {/* Logo */}
         <div className="flex items-center justify-between h-16 sm:h-20 px-4 sm:px-6 border-b border-gray-100/50 dark:border-gray-800/50 bg-gradient-auction">
