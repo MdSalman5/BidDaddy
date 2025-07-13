@@ -31,24 +31,43 @@ class SafeConnectionService {
       return false;
     }
 
-    try {
-      // Simple health check without fancy timeout
-      const response = await fetch("http://localhost:3000/api/v1/health", {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-        },
-      });
+    // Skip health checks in production to avoid CORS issues
+    if (
+      window.location.hostname !== "localhost" &&
+      window.location.hostname !== "127.0.0.1"
+    ) {
+      console.info("Skipping backend health check in production environment");
+      this.updateBackendStatus("offline");
+      localStorage.setItem("useDemoMode", "true");
+      return false;
+    }
 
-      if (response.ok) {
+    try {
+      // Wrap fetch in additional try-catch to isolate FullStory interference
+      let response;
+      try {
+        response = await this.performFetch();
+      } catch (fetchError) {
+        // If fetch fails completely, assume backend is offline
+        throw new Error(
+          `Fetch failed: ${fetchError.message || "Network error"}`,
+        );
+      }
+
+      if (response && response.ok) {
         this.updateBackendStatus("online");
         this.retryAttempts = 0;
         return true;
       } else {
-        throw new Error(`Backend returned ${response.status}`);
+        throw new Error(
+          `Backend returned ${response ? response.status : "no response"}`,
+        );
       }
     } catch (error) {
-      console.warn("Backend health check failed, using demo mode");
+      console.warn(
+        "Backend health check failed, enabling demo mode:",
+        error.message,
+      );
       this.updateBackendStatus("offline");
       this.retryAttempts++;
 
@@ -57,11 +76,41 @@ class SafeConnectionService {
         localStorage.setItem("useDemoMode", "true");
         this.notifyListeners("demo_mode_enabled", {
           reason: "backend_unavailable",
+          error: error.message,
         });
       }
 
       return false;
     }
+  }
+
+  // Isolated fetch method to minimize external interference
+  async performFetch() {
+    // Use a more defensive approach
+    const fetchFn = window.fetch || fetch;
+
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error("Request timeout"));
+      }, 3000);
+
+      fetchFn("http://localhost:3000/api/v1/health", {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        mode: "cors", // Explicitly set CORS mode
+        cache: "no-cache", // Prevent caching issues
+      })
+        .then((response) => {
+          clearTimeout(timeout);
+          resolve(response);
+        })
+        .catch((error) => {
+          clearTimeout(timeout);
+          reject(error);
+        });
+    });
   }
 
   startHealthChecks() {
