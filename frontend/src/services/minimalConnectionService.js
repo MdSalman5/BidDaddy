@@ -51,10 +51,17 @@ class MinimalConnectionService {
 
     this.healthCheckEnabled = true;
 
-    // Single health check after delay
+    // Immediate health check to connect as soon as possible
     setTimeout(() => {
       this.performSafeHealthCheck();
-    }, 3000);
+    }, 500);
+
+    // Follow-up check if first one fails
+    setTimeout(() => {
+      if (this.backendStatus !== "online") {
+        this.performSafeHealthCheck();
+      }
+    }, 2000);
   }
 
   async performSafeHealthCheck() {
