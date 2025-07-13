@@ -36,15 +36,19 @@ export const auctionService = {
     }
 
     try {
+      // Try live backend first
       const response = await api.get(`/auctionitem/auction/${id}`);
       return response;
     } catch (error) {
-      // Fallback to demo mode on network error
-      if (error.code === "ERR_NETWORK" || error.code === "ECONNREFUSED") {
+      // Try demo backend as fallback
+      try {
+        const response = await api.get(`/demo/auction/${id}`);
+        return response;
+      } catch (demoError) {
+        // Final fallback to client-side demo
         localStorage.setItem("useDemoMode", "true");
         return demoAuthService.getAuctionById(id);
       }
-      throw error;
     }
   },
 
