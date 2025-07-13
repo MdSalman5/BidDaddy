@@ -426,7 +426,9 @@ const AuctionList = () => {
                 </button>
 
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600">Sort by:</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    Sort by:
+                  </span>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
