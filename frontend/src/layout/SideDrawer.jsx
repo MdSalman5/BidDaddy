@@ -28,7 +28,7 @@ import {
 import { toast } from "react-toastify";
 
 const SideDrawer = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, toggleSidebar } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
