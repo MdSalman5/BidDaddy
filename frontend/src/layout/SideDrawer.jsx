@@ -235,7 +235,7 @@ const SideDrawer = () => {
         )}
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto h-0 min-h-0">
           {filteredMenuItems.map((item) => {
             const Icon = item.icon;
             const isActive = isCurrentPath(item.path);
@@ -278,7 +278,9 @@ const SideDrawer = () => {
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Theme
             </span>
-            <ThemeToggle variant="modern" className="w-full" />
+            <div className="relative">
+              <ThemeToggle variant="modern" className="w-full" />
+            </div>
           </div>
 
           {/* Notifications */}
