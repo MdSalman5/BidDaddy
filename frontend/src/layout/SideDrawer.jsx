@@ -120,7 +120,7 @@ const SideDrawer = () => {
       {/* Toggle button for all screen sizes */}
       <div className="fixed top-4 left-4 z-50">
         <button
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={toggleSidebar}
           className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl transition-all duration-200 hover:scale-105"
         >
           {isOpen ? (
