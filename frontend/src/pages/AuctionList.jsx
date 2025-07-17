@@ -401,9 +401,7 @@ const AuctionList = () => {
                       ))}
                     </div>
                   </div>
-                </div>
-              </div>
-                        </div>
+                                </div>
               </div>
             </div>
           )}
