@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser, getUserProfile } from "../store/slices/authSlice";
 import { useTheme } from "../contexts/ThemeContext";
+import { useSidebar } from "../contexts/SidebarContext";
 import ThemeToggle from "../components/ThemeToggle";
 import {
   Home,
