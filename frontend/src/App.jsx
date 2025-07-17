@@ -31,9 +31,10 @@ import "./utils/globalErrorHandler";
 
 const App = () => {
   return (
-    <Provider store={store}>
+        <Provider store={store}>
       <ThemeProvider defaultTheme="system" storageKey="auction-theme">
-        <ErrorBoundary>
+        <SidebarProvider>
+          <ErrorBoundary>
           <Router>
             <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300 lg:flex">
               <DemoNotification />
