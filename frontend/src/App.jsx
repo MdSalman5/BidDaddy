@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   Navigate,
+  Outlet,
 } from "react-router-dom";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { store } from "./store/store";
@@ -30,18 +31,38 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./utils/globalErrorHandler";
 
+const MainLayout = () => {
+  const { isOpen } = useSidebar();
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <DemoNotification />
+      <SideDrawer />
+      <main
+        className={`transition-all duration-300 ease-in-out ${
+          isOpen ? "lg:ml-72" : "ml-0"
+        }`}
+      >
+        <div className="min-h-screen p-4 lg:p-6">
+          <Outlet />
+        </div>
+      </main>
+    </div>
+  );
+};
+
 const AppContent = () => {
   const dispatch = useDispatch();
   const { isAuthenticated, loading, user } = useSelector((state) => state.auth);
 
-  // Initialize auth check on app load
+  // Initialize auth check on app load - only once
   useEffect(() => {
     const token =
       localStorage.getItem("token") || localStorage.getItem("demoUser");
-    if (token && !isAuthenticated && !user) {
+    if (token && !isAuthenticated && !user && !loading) {
       dispatch(getUserProfile());
     }
-  }, [dispatch, isAuthenticated, user]);
+  }, [dispatch]); // Remove dependencies to prevent loops
 
   if (loading) {
     return <LoadingSpinner fullScreen />;
@@ -49,13 +70,18 @@ const AppContent = () => {
 
   return (
     <Routes>
+      {/* Auth routes without sidebar */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
+      {/* Main app routes with sidebar */}
       <Route path="/" element={<MainLayout />}>
         <Route index element={<Home />} />
         <Route path="auctions" element={<AuctionList />} />
         <Route path="auction/:id" element={<AuctionDetail />} />
         <Route path="leaderboard" element={<Leaderboard />} />
+
+        {/* Protected routes */}
         <Route
           path="dashboard"
           element={
@@ -96,31 +122,11 @@ const AppContent = () => {
             </ProtectedRoute>
           }
         />
+
+        {/* Catch all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
-  );
-};
-
-const MainLayout = () => {
-  const { isOpen } = useSidebar();
-
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <DemoNotification />
-      <SideDrawer />
-      <main
-        className={`transition-all duration-300 ease-in-out ${
-          isOpen ? "lg:ml-72" : "ml-0"
-        }`}
-      >
-        <div className="min-h-screen">
-          <Routes>
-            <Route path="/*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </div>
-      </main>
-    </div>
   );
 };
 
@@ -144,7 +150,7 @@ const App = () => {
                   draggable
                   pauseOnHover
                   theme="colored"
-                  className="mt-16"
+                  className="mt-16 z-50"
                   toastClassName="dark:bg-gray-800 dark:text-gray-100"
                 />
               </div>
