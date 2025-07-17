@@ -2,7 +2,28 @@ import api from "./api";
 import { demoAuthService } from "./demoAuthService";
 
 const isDemoMode = () => {
-  return localStorage.getItem("useDemoMode") === "true" || !navigator.onLine;
+  return (
+    localStorage.getItem("useDemoMode") === "true" ||
+    localStorage.getItem("demoUser") !== null ||
+    !navigator.onLine
+  );
+};
+
+const handleApiError = (error, fallbackAction) => {
+  // Network errors or server unavailable
+  if (
+    error.code === "ERR_NETWORK" ||
+    error.code === "ECONNREFUSED" ||
+    !navigator.onLine ||
+    error.response?.status >= 500
+  ) {
+    console.warn("Backend unavailable, falling back to demo mode");
+    localStorage.setItem("useDemoMode", "true");
+    return fallbackAction();
+  }
+
+  // Client errors (400-499) should be thrown as is
+  throw error;
 };
 
 export const authService = {
@@ -26,7 +47,7 @@ export const authService = {
         }
       });
 
-      // Add profile image
+      // Add profile image if provided
       if (userData.profileImage) {
         formData.append("profileImage", userData.profileImage);
       }
@@ -39,12 +60,7 @@ export const authService = {
 
       return response;
     } catch (error) {
-      // Fallback to demo mode on network error
-      if (error.code === "ERR_NETWORK" || error.code === "ECONNREFUSED") {
-        localStorage.setItem("useDemoMode", "true");
-        return demoAuthService.register(userData);
-      }
-      throw error;
+      return handleApiError(error, () => demoAuthService.register(userData));
     }
   },
 
@@ -55,19 +71,18 @@ export const authService = {
     }
 
     try {
-      // Try live backend first
       const response = await api.post("/user/login", { email, password });
+
+      // Store token if received
+      if (response.token) {
+        localStorage.setItem("token", response.token);
+      }
+
       return response;
     } catch (error) {
-      // Try demo backend as fallback
-      try {
-        const response = await api.post("/demo/login", { email, password });
-        return response;
-      } catch (demoError) {
-        // Final fallback to client-side demo
-        localStorage.setItem("useDemoMode", "true");
-        return demoAuthService.login(email, password);
-      }
+      return handleApiError(error, () =>
+        demoAuthService.login(email, password),
+      );
     }
   },
 
@@ -77,37 +92,46 @@ export const authService = {
       return demoAuthService.getProfile();
     }
 
+    // Check if we have a token first
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
     try {
-      // Try live backend first
       const response = await api.get("/user/me");
       return response;
     } catch (error) {
-      // Try demo backend as fallback
-      try {
-        const response = await api.get("/demo/profile");
-        return response;
-      } catch (demoError) {
-        // Final fallback to client-side demo
-        localStorage.setItem("useDemoMode", "true");
-        return demoAuthService.getProfile();
+      // If token is invalid, clear it
+      if (error.response?.status === 401) {
+        localStorage.removeItem("token");
+        throw error;
       }
+
+      return handleApiError(error, () => demoAuthService.getProfile());
     }
   },
 
   // Logout user
   logout: async () => {
     if (isDemoMode()) {
+      localStorage.removeItem("demoUser");
+      localStorage.removeItem("useDemoMode");
       return demoAuthService.logout();
     }
 
     try {
-      const response = await api.get("/user/logout");
-      return response;
+      await api.post("/user/logout");
     } catch (error) {
-      // Even on error, logout locally
+      console.warn("Logout API call failed, continuing with local logout");
+    } finally {
+      // Always clear local storage
+      localStorage.removeItem("token");
       localStorage.removeItem("demoUser");
-      return { success: true, message: "Logged out locally" };
+      localStorage.removeItem("useDemoMode");
     }
+
+    return { success: true, message: "Logged out successfully" };
   },
 
   // Get leaderboard
@@ -117,19 +141,63 @@ export const authService = {
     }
 
     try {
-      // Try live backend first
       const response = await api.get("/user/leaderboard");
       return response;
     } catch (error) {
-      // Try demo backend as fallback
-      try {
-        const response = await api.get("/demo/leaderboard");
-        return response;
-      } catch (demoError) {
-        // Final fallback to client-side demo
-        localStorage.setItem("useDemoMode", "true");
-        return demoAuthService.getLeaderboard();
+      return handleApiError(error, () => demoAuthService.getLeaderboard());
+    }
+  },
+
+  // Update user profile
+  updateProfile: async (userData) => {
+    if (isDemoMode()) {
+      return demoAuthService.updateProfile(userData);
+    }
+
+    try {
+      const response = await api.put("/user/profile", userData);
+      return response;
+    } catch (error) {
+      return handleApiError(error, () =>
+        demoAuthService.updateProfile(userData),
+      );
+    }
+  },
+
+  // Change password
+  changePassword: async (currentPassword, newPassword) => {
+    if (isDemoMode()) {
+      return demoAuthService.changePassword(currentPassword, newPassword);
+    }
+
+    try {
+      const response = await api.put("/user/change-password", {
+        currentPassword,
+        newPassword,
+      });
+      return response;
+    } catch (error) {
+      return handleApiError(error, () =>
+        demoAuthService.changePassword(currentPassword, newPassword),
+      );
+    }
+  },
+
+  // Refresh token
+  refreshToken: async () => {
+    if (isDemoMode()) {
+      return demoAuthService.getProfile();
+    }
+
+    try {
+      const response = await api.post("/user/refresh-token");
+      if (response.token) {
+        localStorage.setItem("token", response.token);
       }
+      return response;
+    } catch (error) {
+      localStorage.removeItem("token");
+      throw error;
     }
   },
 
@@ -139,9 +207,25 @@ export const authService = {
       localStorage.setItem("useDemoMode", "true");
     } else {
       localStorage.removeItem("useDemoMode");
+      localStorage.removeItem("demoUser");
     }
+
+    // Reload page to reinitialize with new mode
+    window.location.reload();
   },
 
   // Check if in demo mode
   isDemoMode,
+
+  // Check if user is authenticated
+  isAuthenticated: () => {
+    return Boolean(
+      localStorage.getItem("token") || localStorage.getItem("demoUser"),
+    );
+  },
+
+  // Get stored token
+  getToken: () => {
+    return localStorage.getItem("token");
+  },
 };
