@@ -403,8 +403,10 @@ const AuctionList = () => {
                   </div>
                 </div>
               </div>
+                        </div>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Main Content */}
           <div className="flex-1">
