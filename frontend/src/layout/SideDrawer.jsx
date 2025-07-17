@@ -312,7 +312,7 @@ const SideDrawer = () => {
               </Link>
               <Link
                 to="/register"
-                onClick={() => setIsOpen(false)}
+                onClick={() => window.innerWidth < 1024 && toggleSidebar()}
                 className="block w-full text-center btn-secondary"
               >
                 Sign Up
