@@ -180,7 +180,7 @@ const AuctionList = () => {
           <h2 className="text-2xl font-bold text-red-600 mb-4">
             Error Loading Auctions
           </h2>
-          <p className="text-gray-600">{error}</p>
+          <p className="text-gray-600 dark:text-gray-400">{error}</p>
         </div>
       </div>
     );
@@ -205,19 +205,34 @@ const AuctionList = () => {
 
             {/* Controls */}
             <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-4">
-              {/* Filter Button */}
+              {/* Filter Toggle Button */}
               <button
-                onClick={() => setShowFilterModal(true)}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white font-medium rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
+                onClick={() => setShowFilters(!showFilters)}
+                className={`inline-flex items-center px-4 py-2 font-medium rounded-lg transition-all duration-200 ${
+                  showFilters
+                    ? "bg-blue-600 text-white shadow-md"
+                    : "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 border border-blue-200 dark:border-blue-800"
+                }`}
               >
-                <Filter className="w-4 h-4 mr-2" />
-                Filters
+                <SlidersHorizontal className="w-4 h-4 mr-2" />
+                {showFilters ? "Hide Filters" : "Show Filters"}
                 {getActiveFilterCount() > 0 && (
-                  <span className="ml-2 px-2 py-1 bg-blue-800 text-xs rounded-full">
+                  <span className="ml-2 px-2 py-1 bg-blue-800 text-white text-xs rounded-full">
                     {getActiveFilterCount()}
                   </span>
                 )}
               </button>
+
+              {/* Clear Filters Button */}
+              {getActiveFilterCount() > 0 && (
+                <button
+                  onClick={clearFilters}
+                  className="inline-flex items-center px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 font-medium rounded-lg transition-colors border border-red-200 dark:border-red-800"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Clear Filters
+                </button>
+              )}
 
               {/* Status Tabs */}
               <div className="flex space-x-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
@@ -264,166 +279,150 @@ const AuctionList = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Filters Sidebar */}
+          {/* Collapsible Filters Sidebar */}
           {showFilters && (
             <div className="lg:w-80 transition-all duration-300">
-              <div className="card sticky top-8">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 sticky top-8">
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                      Filters
+                      Advanced Filters
                     </h3>
-                    <div className="flex items-center space-x-2">
-                      {getActiveFilterCount() > 0 && (
-                        <button
-                          onClick={clearFilters}
-                          className="px-3 py-1.5 text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                        >
-                          Clear All
-                        </button>
-                      )}
-                      <button
-                        onClick={() => setShowFilters(false)}
-                        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                    <button
+                      onClick={() => setShowFilters(false)}
+                      className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-6">
+                    {/* Search */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Search
+                      </label>
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <input
+                          type="text"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                          placeholder="Search auctions..."
+                        />
+                      </div>
+                    </div>
+
+                    {/* Category */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Category
+                      </label>
+                      <select
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       >
-                        <X className="w-5 h-5" />
-                      </button>
+                        <option value="all">All Categories</option>
+                        {categories.map((category) => (
+                          <option key={category} value={category}>
+                            {category}
+                          </option>
+                        ))}
+                      </select>
                     </div>
-                  </div>
 
-                <div className="space-y-6">
-                  {/* Search */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Search
-                    </label>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                      <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="input-field pl-10"
-                        placeholder="Search auctions..."
-                      />
+                    {/* Condition */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Condition
+                      </label>
+                      <select
+                        value={selectedCondition}
+                        onChange={(e) => setSelectedCondition(e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      >
+                        <option value="all">All Conditions</option>
+                        {conditions.map((condition) => (
+                          <option key={condition} value={condition}>
+                            {condition}
+                          </option>
+                        ))}
+                      </select>
                     </div>
-                  </div>
 
-                  {/* Category */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Category
-                    </label>
-                    <select
-                      value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="input-field"
-                    >
-                      <option value="all">All Categories</option>
-                      {categories.map((category) => (
-                        <option key={category} value={category}>
-                          {category}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Condition */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Condition
-                    </label>
-                    <select
-                      value={selectedCondition}
-                      onChange={(e) => setSelectedCondition(e.target.value)}
-                      className="input-field"
-                    >
-                      <option value="all">All Conditions</option>
-                      {conditions.map((condition) => (
-                        <option key={condition} value={condition}>
-                          {condition}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Price Range */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Price Range
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <input
-                        type="number"
-                        value={priceRange.min}
-                        onChange={(e) =>
-                          setPriceRange({ ...priceRange, min: e.target.value })
-                        }
-                        className="input-field"
-                        placeholder="Min"
-                      />
-                      <input
-                        type="number"
-                        value={priceRange.max}
-                        onChange={(e) =>
-                          setPriceRange({ ...priceRange, max: e.target.value })
-                        }
-                        className="input-field"
-                        placeholder="Max"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Quick Price Filters */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Quick Filters
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {[
-                        { label: "Under $100", max: 100 },
-                        { label: "$100-$500", min: 100, max: 500 },
-                        { label: "$500-$1000", min: 500, max: 1000 },
-                        { label: "Over $1000", min: 1000 },
-                      ].map((filter) => (
-                        <button
-                          key={filter.label}
-                          onClick={() =>
+                    {/* Price Range */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Price Range
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <input
+                          type="number"
+                          value={priceRange.min}
+                          onChange={(e) =>
                             setPriceRange({
-                              min: filter.min?.toString() || "",
-                              max: filter.max?.toString() || "",
+                              ...priceRange,
+                              min: e.target.value,
                             })
                           }
-                          className="text-xs py-2 px-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-gray-700"
-                        >
-                          {filter.label}
-                        </button>
-                      ))}
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                          placeholder="Min"
+                        />
+                        <input
+                          type="number"
+                          value={priceRange.max}
+                          onChange={(e) =>
+                            setPriceRange({
+                              ...priceRange,
+                              max: e.target.value,
+                            })
+                          }
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                          placeholder="Max"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Quick Price Filters */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Quick Filters
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          { label: "Under $100", max: 100 },
+                          { label: "$100-$500", min: 100, max: 500 },
+                          { label: "$500-$1000", min: 500, max: 1000 },
+                          { label: "Over $1000", min: 1000 },
+                        ].map((filter) => (
+                          <button
+                            key={filter.label}
+                            onClick={() =>
+                              setPriceRange({
+                                min: filter.min?.toString() || "",
+                                max: filter.max?.toString() || "",
+                              })
+                            }
+                            className="text-xs py-2 px-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors text-gray-700 dark:text-gray-300"
+                          >
+                            {filter.label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                                </div>
+                </div>
               </div>
             </div>
           )}
 
           {/* Main Content */}
           <div className="flex-1">
-            {/* Top Bar */}
+            {/* Sort and View Controls */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
               <div className="flex items-center space-x-4 mb-4 sm:mb-0">
-                                <button
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center space-x-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors border border-blue-200 dark:border-blue-800"
-                >
-                  <SlidersHorizontal className="w-5 h-5" />
-                  <span>Filters</span>
-                  {getActiveFilterCount() > 0 && (
-                    <span className="bg-blue-500 text-white text-xs rounded-full px-2 py-1">
-                      {getActiveFilterCount()}
-                    </span>
-                  )}
-                </button>
-
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-gray-600 dark:text-gray-400">
                     Sort by:
@@ -431,7 +430,7 @@ const AuctionList = () => {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="input-field text-sm py-2"
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
                   >
                     {sortOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -498,7 +497,10 @@ const AuctionList = () => {
                   Try adjusting your filters or search terms to find more
                   auctions.
                 </p>
-                <button onClick={clearFilters} className="btn-primary">
+                <button
+                  onClick={clearFilters}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
                   Clear All Filters
                 </button>
               </div>
@@ -507,7 +509,9 @@ const AuctionList = () => {
             {/* Load More */}
             {filteredAuctions.length > 0 && filteredAuctions.length >= 20 && (
               <div className="mt-12 text-center">
-                <button className="btn-secondary">Load More Auctions</button>
+                <button className="px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                  Load More Auctions
+                </button>
               </div>
             )}
           </div>
