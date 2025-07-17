@@ -1,6 +1,18 @@
 import { testConnection } from "../services/api";
 import { authService } from "../services/authService";
 
+// Safe environment variable getter
+const getEnvVar = (name, fallback = null) => {
+  try {
+    return (
+      (typeof process !== "undefined" && process.env && process.env[name]) ||
+      fallback
+    );
+  } catch (error) {
+    return fallback;
+  }
+};
+
 // Initialize app and check backend connectivity
 export const initializeApp = async () => {
   console.log("🚀 Initializing BidDaddy application...");
@@ -93,9 +105,9 @@ export const getAppConfig = () => {
   return {
     isDemoMode,
     isOnline,
-    backendUrl: process.env.REACT_APP_API_URL || "http://localhost:3000/api/v1",
-    version: process.env.REACT_APP_VERSION || "1.0.0",
-    environment: process.env.NODE_ENV || "development",
+    backendUrl: getEnvVar("REACT_APP_API_URL", "http://localhost:3000/api/v1"),
+    version: getEnvVar("REACT_APP_VERSION", "1.0.0"),
+    environment: getEnvVar("NODE_ENV", "production"),
   };
 };
 
