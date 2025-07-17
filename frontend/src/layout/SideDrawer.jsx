@@ -141,12 +141,12 @@ const SideDrawer = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-72 sm:w-80 lg:w-80 xl:w-[22rem] bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-2xl transform transition-all duration-300 ease-in-out border-r border-gray-200/50 dark:border-gray-800/50 ${
+        className={`fixed inset-y-0 left-0 z-50 w-72 sm:w-80 lg:w-80 xl:w-[22rem] bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-2xl transform transition-all duration-300 ease-in-out border-r border-gray-200/50 dark:border-gray-800/50 flex flex-col ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {/* Logo */}
-        <div className="flex items-center justify-between h-16 sm:h-20 px-4 sm:px-6 border-b border-gray-100/50 dark:border-gray-800/50 bg-gradient-auction">
+        {/* Logo - Fixed Header */}
+        <div className="flex items-center justify-between h-16 sm:h-20 px-4 sm:px-6 border-b border-gray-100/50 dark:border-gray-800/50 bg-gradient-auction flex-shrink-0">
           <Link to="/" className="flex items-center space-x-2 sm:space-x-3">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center shadow-lg">
               <Gavel className="w-4 h-4 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
@@ -170,9 +170,9 @@ const SideDrawer = () => {
           </div>
         </div>
 
-        {/* User info */}
+        {/* User info - Fixed */}
         {isAuthenticated && user && (
-          <div className="p-4 sm:p-6 border-b border-gray-100/50 dark:border-gray-800/50 bg-gray-50/80 dark:bg-gray-800/30 backdrop-blur-sm">
+          <div className="p-4 sm:p-6 border-b border-gray-100/50 dark:border-gray-800/50 bg-gray-50/80 dark:bg-gray-800/30 backdrop-blur-sm flex-shrink-0">
             <div className="flex items-center space-x-4">
               <div className="relative">
                 <img
@@ -210,9 +210,9 @@ const SideDrawer = () => {
           </div>
         )}
 
-        {/* Quick Stats */}
+        {/* Quick Stats - Fixed */}
         {isAuthenticated && user && (
-          <div className="p-6 border-b border-gray-100 dark:border-gray-800">
+          <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex-shrink-0">
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
                 <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
@@ -234,45 +234,47 @@ const SideDrawer = () => {
           </div>
         )}
 
-        {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto h-0 min-h-0">
-          {filteredMenuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = isCurrentPath(item.path);
-            return (
-              <Link
-                key={item.name}
-                to={item.path}
-                onClick={() => window.innerWidth < 1024 && toggleSidebar()}
-                className={`group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ease-in-out ${
-                  isActive
-                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 shadow-sm border border-blue-100 dark:border-blue-800"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100"
-                }`}
-              >
-                <Icon
-                  className={`mr-4 flex-shrink-0 h-5 w-5 transition-colors ${
+        {/* Navigation - Scrollable */}
+        <div className="flex-1 overflow-y-auto">
+          <nav className="px-4 py-6 space-y-2">
+            {filteredMenuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = isCurrentPath(item.path);
+              return (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  onClick={() => window.innerWidth < 1024 && toggleSidebar()}
+                  className={`group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ease-in-out ${
                     isActive
-                      ? "text-blue-600 dark:text-blue-400"
-                      : "text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300"
+                      ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 shadow-sm border border-blue-100 dark:border-blue-800"
+                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100"
                   }`}
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="truncate">{item.name}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                    {item.description}
-                  </p>
-                </div>
-                {isActive && (
-                  <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full animate-pulse"></div>
-                )}
-              </Link>
-            );
-          })}
-        </nav>
+                >
+                  <Icon
+                    className={`mr-4 flex-shrink-0 h-5 w-5 transition-colors ${
+                      isActive
+                        ? "text-blue-600 dark:text-blue-400"
+                        : "text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300"
+                    }`}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="truncate">{item.name}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                      {item.description}
+                    </p>
+                  </div>
+                  {isActive && (
+                    <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full animate-pulse"></div>
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
 
-        {/* Bottom section */}
-        <div className="border-t border-gray-100 dark:border-gray-800 p-4 space-y-4">
+        {/* Bottom section - Fixed Footer */}
+        <div className="border-t border-gray-100 dark:border-gray-800 p-4 space-y-4 flex-shrink-0 bg-white/95 dark:bg-gray-900/95">
           {/* Theme Toggle */}
           <div className="space-y-2">
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
