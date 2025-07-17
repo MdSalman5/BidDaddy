@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 const SidebarContext = createContext({
-  isOpen: true,
+  isOpen: false,
   setIsOpen: () => null,
   toggleSidebar: () => null,
 });
@@ -18,18 +18,26 @@ export function SidebarProvider({ children }) {
   const [isOpen, setIsOpen] = useState(() => {
     // Check if we're on mobile/tablet first
     if (typeof window !== "undefined") {
-      const isMobile = window.innerWidth < 1024; // lg breakpoint
-      // Start closed on mobile, open on desktop
-      return !isMobile;
+      const isDesktop = window.innerWidth >= 1024; // lg breakpoint
+
+      // Get saved preference for desktop, default closed for mobile
+      const savedPreference = localStorage.getItem("sidebarOpen");
+      if (isDesktop && savedPreference !== null) {
+        return savedPreference === "true";
+      }
+
+      // Default: closed on mobile, open on desktop
+      return isDesktop;
     }
-    return true; // Default to open
+    return false; // Default to closed for SSR
   });
 
   useEffect(() => {
     const handleResize = () => {
-      const isMobile = window.innerWidth < 1024;
-      // Auto-close on mobile, but don't auto-open on desktop to preserve user choice
-      if (isMobile && isOpen) {
+      const isDesktop = window.innerWidth >= 1024;
+
+      if (!isDesktop && isOpen) {
+        // Auto-close on mobile
         setIsOpen(false);
       }
     };
@@ -39,7 +47,13 @@ export function SidebarProvider({ children }) {
   }, [isOpen]);
 
   const toggleSidebar = () => {
-    setIsOpen(!isOpen);
+    const newState = !isOpen;
+    setIsOpen(newState);
+
+    // Save preference for desktop
+    if (window.innerWidth >= 1024) {
+      localStorage.setItem("sidebarOpen", newState.toString());
+    }
   };
 
   const value = {
