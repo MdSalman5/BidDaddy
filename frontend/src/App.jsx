@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
-import { Provider } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { store } from "./store/store";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { SidebarProvider, useSidebar } from "./contexts/SidebarContext";
+import { getUserProfile } from "./store/slices/authSlice";
 import SideDrawer from "./layout/SideDrawer";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -24,86 +25,101 @@ import Leaderboard from "./pages/Leaderboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import DemoNotification from "./components/DemoNotification";
 import ErrorBoundary from "./components/ErrorBoundary";
+import LoadingSpinner from "./components/LoadingSpinner";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-// Import global error handler to initialize it
 import "./utils/globalErrorHandler";
 
-const AppLayout = () => {
+const AppContent = () => {
+  const dispatch = useDispatch();
+  const { isAuthenticated, loading, user } = useSelector((state) => state.auth);
+
+  // Initialize auth check on app load
+  useEffect(() => {
+    const token =
+      localStorage.getItem("token") || localStorage.getItem("demoUser");
+    if (token && !isAuthenticated && !user) {
+      dispatch(getUserProfile());
+    }
+  }, [dispatch, isAuthenticated, user]);
+
+  if (loading) {
+    return <LoadingSpinner fullScreen />;
+  }
+
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/" element={<MainLayout />}>
+        <Route index element={<Home />} />
+        <Route path="auctions" element={<AuctionList />} />
+        <Route path="auction/:id" element={<AuctionDetail />} />
+        <Route path="leaderboard" element={<Leaderboard />} />
+        <Route
+          path="dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="my-auctions"
+          element={
+            <ProtectedRoute>
+              <MyAuctions />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="my-bids"
+          element={
+            <ProtectedRoute>
+              <MyBids />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="create-auction"
+          element={
+            <ProtectedRoute>
+              <CreateAuction />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
+  );
+};
+
+const MainLayout = () => {
   const { isOpen } = useSidebar();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <DemoNotification />
       <SideDrawer />
-      <div
-        className={`transition-all duration-300 ${
-          isOpen ? "lg:ml-80 xl:ml-[22rem]" : "ml-0"
+      <main
+        className={`transition-all duration-300 ease-in-out ${
+          isOpen ? "lg:ml-72" : "ml-0"
         }`}
       >
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/auctions" element={<AuctionList />} />
-          <Route path="/auction/:id" element={<AuctionDetail />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/my-auctions"
-            element={
-              <ProtectedRoute>
-                <MyAuctions />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/my-bids"
-            element={
-              <ProtectedRoute>
-                <MyBids />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/create-auction"
-            element={
-              <ProtectedRoute>
-                <CreateAuction />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </div>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-        toastClassName="dark:bg-gray-800 dark:text-gray-100"
-      />
+        <div className="min-h-screen">
+          <Routes>
+            <Route path="/*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
+      </main>
     </div>
   );
 };
@@ -115,7 +131,23 @@ const App = () => {
         <SidebarProvider>
           <ErrorBoundary>
             <Router>
-              <AppLayout />
+              <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+                <AppContent />
+                <ToastContainer
+                  position="top-right"
+                  autoClose={3000}
+                  hideProgressBar={false}
+                  newestOnTop
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                  theme="colored"
+                  className="mt-16"
+                  toastClassName="dark:bg-gray-800 dark:text-gray-100"
+                />
+              </div>
             </Router>
           </ErrorBoundary>
         </SidebarProvider>
