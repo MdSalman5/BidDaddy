@@ -1,7 +1,22 @@
 import axios from "axios";
 
-const API_BASE_URL =
-  process.env.REACT_APP_API_URL || "http://localhost:3000/api/v1";
+// Get environment variables with fallbacks for browser compatibility
+const getEnvVar = (name, fallback = null) => {
+  try {
+    return (
+      (typeof process !== "undefined" && process.env && process.env[name]) ||
+      fallback
+    );
+  } catch (error) {
+    return fallback;
+  }
+};
+
+const API_BASE_URL = getEnvVar(
+  "REACT_APP_API_URL",
+  "http://localhost:3000/api/v1",
+);
+const NODE_ENV = getEnvVar("NODE_ENV", "production");
 
 // Create axios instance with default config
 const api = axios.create({
@@ -23,7 +38,7 @@ api.interceptors.request.use(
     }
 
     // Log request in development
-    if (process.env.NODE_ENV === "development") {
+    if (NODE_ENV === "development") {
       console.log(
         `🔄 API Request: ${config.method?.toUpperCase()} ${config.url}`,
         config.data ? { data: config.data } : "",
@@ -42,7 +57,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     // Log successful responses in development
-    if (process.env.NODE_ENV === "development") {
+    if (NODE_ENV === "development") {
       console.log(
         `✅ API Response: ${response.status}`,
         response.config.url,
@@ -54,7 +69,7 @@ api.interceptors.response.use(
   },
   (error) => {
     // Log errors in development
-    if (process.env.NODE_ENV === "development") {
+    if (NODE_ENV === "development") {
       console.error("❌ API Error:", error);
     }
 
@@ -117,7 +132,7 @@ export const checkBackendHealth = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/health`, {
       method: "GET",
-      timeout: 5000,
+      signal: AbortSignal.timeout(5000), // 5 second timeout
     });
     return response.ok;
   } catch (error) {
