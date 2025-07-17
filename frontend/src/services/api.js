@@ -22,7 +22,7 @@ const NODE_ENV = getEnvVar("NODE_ENV", "production");
 const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true, // Important for JWT cookies
-  timeout: 15000, // 15 second timeout
+  timeout: 10000, // 10 second timeout
   headers: {
     "Content-Type": "application/json",
   },
@@ -127,31 +127,75 @@ api.interceptors.response.use(
   },
 );
 
-// Helper function to check if backend is available
+// Helper function to check if backend is available - simplified version
 export const checkBackendHealth = async () => {
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+
     const response = await fetch(`${API_BASE_URL}/health`, {
       method: "GET",
-      signal: AbortSignal.timeout(5000), // 5 second timeout
+      signal: controller.signal,
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
+
+    clearTimeout(timeoutId);
     return response.ok;
   } catch (error) {
     return false;
   }
 };
 
-// Helper function to test API connectivity
+// Helper function to test API connectivity - no longer calls /health
 export const testConnection = async () => {
   try {
-    await api.get("/health");
-    return { connected: true, message: "Backend connected successfully" };
+    // Instead of calling /health, try a simple GET to the base URL
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+    const response = await fetch(API_BASE_URL, {
+      method: "GET",
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    // Even if it returns 404, it means the server is responding
+    const connected = response.status < 500;
+
+    return {
+      connected,
+      message: connected
+        ? "Backend connected successfully"
+        : "Backend returned server error",
+    };
   } catch (error) {
+    if (error.name === "AbortError") {
+      return {
+        connected: false,
+        message: "Connection timeout",
+        shouldUseDemoMode: true,
+      };
+    }
+
     return {
       connected: false,
       message: error.message,
-      shouldUseDemoMode: error.shouldFallbackToDemo,
+      shouldUseDemoMode: true,
     };
   }
+};
+
+// Create a mock health endpoint response for when backend doesn't have it
+export const createMockHealthResponse = () => {
+  return {
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    uptime: "unknown",
+    version: "1.0.0",
+  };
 };
 
 export default api;
