@@ -305,7 +305,7 @@ const SideDrawer = () => {
             <div className="space-y-3">
               <Link
                 to="/login"
-                onClick={() => setIsOpen(false)}
+                onClick={() => window.innerWidth < 1024 && toggleSidebar()}
                 className="block w-full text-center btn-primary"
               >
                 Sign In
