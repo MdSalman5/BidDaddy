@@ -140,15 +140,8 @@ const SideDrawer = () => {
 
       {/* Sidebar */}
       <div
-        className={`${
-          // Mobile: fixed overlay
-          "fixed inset-y-0 left-0 z-50 w-72 sm:w-80 bg-white dark:bg-gray-900 shadow-2xl transform transition-all duration-300 ease-in-out border-r border-gray-200 dark:border-gray-800 " +
-          // Desktop: static sidebar
-          "lg:static lg:inset-auto lg:w-80 xl:w-[22rem] lg:bg-white lg:dark:bg-gray-900 lg:shadow-none lg:transform-none lg:transition-none " +
-          // Mobile transform
-          (isOpen ? "translate-x-0" : "-translate-x-full") +
-          // Desktop always visible
-          " lg:translate-x-0"
+        className={`fixed inset-y-0 left-0 z-50 w-72 sm:w-80 lg:w-80 xl:w-[22rem] bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-2xl transform transition-all duration-300 ease-in-out border-r border-gray-200/50 dark:border-gray-800/50 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Logo */}
