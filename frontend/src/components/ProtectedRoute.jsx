@@ -1,27 +1,23 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Navigate } from "react-router-dom";
-import { getUserProfile } from "../store/slices/authSlice";
+import React from "react";
+import { useSelector } from "react-redux";
+import { Navigate, useLocation } from "react-router-dom";
 import LoadingSpinner from "./LoadingSpinner";
 
 const ProtectedRoute = ({ children }) => {
-  const dispatch = useDispatch();
   const { isAuthenticated, loading } = useSelector((state) => state.auth);
+  const location = useLocation();
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      dispatch(getUserProfile());
-    }
-  }, [dispatch, isAuthenticated]);
-
+  // Show loading spinner while checking authentication
   if (loading) {
     return <LoadingSpinner />;
   }
 
+  // If not authenticated, redirect to login with return path
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
+  // User is authenticated, render the protected content
   return children;
 };
 
