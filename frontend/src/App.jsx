@@ -11,10 +11,7 @@ import { store } from "./store/store";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { SidebarProvider, useSidebar } from "./contexts/SidebarContext";
 import { getUserProfile, clearAuth } from "./store/slices/authSlice";
-import {
-  initializeApp,
-  setupConnectionMonitoring,
-} from "./utils/appInitializer";
+import { initializeServices, getServiceStatus } from "./services";
 import SideDrawer from "./layout/SideDrawer";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -59,17 +56,27 @@ const AppContent = () => {
   const dispatch = useDispatch();
   const { isAuthenticated, loading } = useSelector((state) => state.auth);
   const [appInitialized, setAppInitialized] = useState(false);
-  const [initializationError, setInitializationError] = useState(null);
+  const [serviceStatus, setServiceStatus] = useState(null);
 
   // Initialize app on mount
   useEffect(() => {
     const init = async () => {
       try {
-        // Initialize app and check connectivity
-        const initResult = await initializeApp();
+        console.log("🚀 Starting BidDaddy application...");
 
-        if (initResult.mode === "demo") {
-          toast.info(initResult.message, { autoClose: 5000 });
+        // Initialize services with backend connectivity check
+        const serviceInit = await initializeServices();
+        setServiceStatus(serviceInit.status);
+
+        // Show appropriate notification based on service status
+        if (serviceInit.status.backendConnected) {
+          console.log("✅ Connected to live backend");
+        } else {
+          console.log("🎭 Running in demo mode");
+          toast.info("Demo mode active - some features may be limited", {
+            autoClose: 5000,
+            position: "top-center",
+          });
         }
 
         // Check if user should be auto-logged in
@@ -77,8 +84,11 @@ const AppContent = () => {
           localStorage.getItem("token") || localStorage.getItem("demoUser");
         if (token && !isAuthenticated) {
           try {
+            console.log("🔐 Checking existing authentication...");
             await dispatch(getUserProfile()).unwrap();
+            console.log("✅ User authenticated successfully");
           } catch (error) {
+            console.warn("⚠️ Auth check failed:", error.message);
             // Clear invalid auth data
             dispatch(clearAuth());
             localStorage.removeItem("token");
@@ -87,9 +97,23 @@ const AppContent = () => {
         }
 
         setAppInitialized(true);
+        console.log("🎉 Application initialized successfully");
       } catch (error) {
-        console.error("App initialization failed:", error);
-        setInitializationError(error.message);
+        console.error("❌ App initialization failed:", error);
+
+        // Force demo mode and continue
+        localStorage.setItem("useDemoMode", "true");
+        setServiceStatus({
+          backendConnected: false,
+          demoMode: true,
+          online: navigator.onLine,
+          message: "Initialization failed, using demo mode",
+        });
+
+        toast.error("Failed to connect to backend. Using demo mode.", {
+          autoClose: 5000,
+        });
+
         setAppInitialized(true); // Still allow app to load
       }
     };
@@ -97,17 +121,42 @@ const AppContent = () => {
     init();
 
     // Setup connection monitoring
-    const cleanup = setupConnectionMonitoring((status) => {
-      if (!status.online) {
-        toast.warning("Connection lost. Switching to demo mode.", {
-          autoClose: 3000,
-        });
-      } else {
-        toast.success("Connection restored!", { autoClose: 2000 });
-      }
-    });
+    const handleOnline = async () => {
+      console.log("🌐 Connection restored, checking backend...");
+      try {
+        const status = await getServiceStatus();
+        setServiceStatus(status);
 
-    return cleanup;
+        if (status.backendConnected) {
+          toast.success("Connected to live backend!", { autoClose: 3000 });
+        } else {
+          toast.warning("Connection restored but backend unavailable", {
+            autoClose: 3000,
+          });
+        }
+      } catch (error) {
+        console.warn("Failed to check service status on reconnect");
+      }
+    };
+
+    const handleOffline = () => {
+      console.log("📴 Connection lost");
+      localStorage.setItem("useDemoMode", "true");
+      setServiceStatus((prev) => ({
+        ...prev,
+        online: false,
+        demoMode: true,
+      }));
+      toast.warning("Connection lost. Demo mode enabled.", { autoClose: 3000 });
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
   }, [dispatch, isAuthenticated]);
 
   // Show loading spinner during initialization or auth check
@@ -115,34 +164,13 @@ const AppContent = () => {
     return (
       <LoadingSpinner
         fullScreen
+        size="lg"
         text={
           !appInitialized
-            ? "Initializing application..."
+            ? "Connecting to backend..."
             : "Checking authentication..."
         }
       />
-    );
-  }
-
-  // Show error if initialization failed critically
-  if (initializationError && !appInitialized) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-6">
-          <h1 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">
-            Initialization Failed
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {initializationError}
-          </p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Reload Application
-          </button>
-        </div>
-      </div>
     );
   }
 
