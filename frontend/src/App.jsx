@@ -29,82 +29,158 @@ import "react-toastify/dist/ReactToastify.css";
 // Import global error handler to initialize it
 import "./utils/globalErrorHandler";
 
+const AppLayout = () => {
+  const { isOpen } = useSidebar();
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+      <DemoNotification />
+      <SideDrawer />
+      <div
+        className={`transition-all duration-300 ${
+          isOpen ? 'lg:ml-80 xl:ml-[22rem]' : 'ml-0'
+        }`}
+      >
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/auctions" element={<AuctionList />} />
+          <Route path="/auction/:id" element={<AuctionDetail />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-auctions"
+            element={
+              <ProtectedRoute>
+                <MyAuctions />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-bids"
+            element={
+              <ProtectedRoute>
+                <MyBids />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/create-auction"
+            element={
+              <ProtectedRoute>
+                <CreateAuction />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        toastClassName="dark:bg-gray-800 dark:text-gray-100"
+      />
+    </div>
+  );
+};
+
 const App = () => {
   return (
     <Provider store={store}>
       <ThemeProvider defaultTheme="system" storageKey="auction-theme">
         <SidebarProvider>
           <ErrorBoundary>
-            <Router>
-              <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300 lg:flex">
-                <DemoNotification />
-                <SideDrawer />
-                <div className="flex-1 lg:overflow-hidden">
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/auctions" element={<AuctionList />} />
-                    <Route path="/auction/:id" element={<AuctionDetail />} />
-                    <Route
-                      path="/dashboard"
-                      element={
-                        <ProtectedRoute>
-                          <Dashboard />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/my-auctions"
-                      element={
-                        <ProtectedRoute>
-                          <MyAuctions />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/my-bids"
-                      element={
-                        <ProtectedRoute>
-                          <MyBids />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/create-auction"
-                      element={
-                        <ProtectedRoute>
-                          <CreateAuction />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/profile"
-                      element={
-                        <ProtectedRoute>
-                          <Profile />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route path="/leaderboard" element={<Leaderboard />} />
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                  </Routes>
-                </div>
+          <Router>
+            <AppLayout />
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/auctions" element={<AuctionList />} />
+                  <Route path="/auction/:id" element={<AuctionDetail />} />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <Dashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/my-auctions"
+                    element={
+                      <ProtectedRoute>
+                        <MyAuctions />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/my-bids"
+                    element={
+                      <ProtectedRoute>
+                        <MyBids />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/create-auction"
+                    element={
+                      <ProtectedRoute>
+                        <CreateAuction />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute>
+                        <Profile />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route path="/leaderboard" element={<Leaderboard />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
               </div>
-              <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="colored"
-                toastClassName="dark:bg-gray-800 dark:text-gray-100"
-              />
-            </Router>
+            </div>
+            <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="colored"
+              toastClassName="dark:bg-gray-800 dark:text-gray-100"
+            />
+                    </Router>
           </ErrorBoundary>
         </SidebarProvider>
       </ThemeProvider>
