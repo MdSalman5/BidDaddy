@@ -10,6 +10,8 @@ import auctionItemRouter from "./router/auctionItemRoutes.js";
 import bidRouter from "./router/bidRoutes.js";
 import commissionRouter from "./router/commissionRouter.js";
 import superAdminRouter from "./router/superAdminRoutes.js";
+import healthRouter from "./router/healthRoutes.js";
+import demoRouter from "./router/demoRoutes.js";
 import { endedAuctionCron } from "./automation/endedAuctionCron.js";
 import { verifyCommissionCron } from "./automation/verifyCommissionCron.js";
 
@@ -23,7 +25,7 @@ app.use(
     origin: [process.env.FRONTEND_URL],
     methode: ["POST", "GET", "DELETE", "PUT"],
     credentials: true,
-  })
+  }),
 );
 
 app.use(cookieParser());
@@ -35,9 +37,11 @@ app.use(
   fileUpload({
     useTempFiles: true,
     tempFileDir: "/tmp/",
-  })
+  }),
 );
 
+app.use("/api/v1", healthRouter);
+app.use("/api/v1/demo", demoRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/auctionitem", auctionItemRouter);
 app.use("/api/v1/bid", bidRouter);
