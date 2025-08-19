@@ -7,14 +7,24 @@ const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useSelector((state) => state.auth);
   const location = useLocation();
 
-  // Show loading spinner while checking authentication
+  // If we're still loading auth state, show a simple loading
   if (loading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <LoadingSpinner text="Checking access..." />
+      </div>
+    );
   }
 
   // If not authenticated, redirect to login with return path
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    return (
+      <Navigate 
+        to="/login" 
+        state={{ from: location.pathname }} 
+        replace 
+      />
+    );
   }
 
   // User is authenticated, render the protected content
