@@ -11,7 +11,6 @@ import { store } from "./store/store";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { SidebarProvider, useSidebar } from "./contexts/SidebarContext";
 import { getUserProfile, clearAuth } from "./store/slices/authSlice";
-import { initializeServices, getServiceStatus } from "./services";
 import SideDrawer from "./layout/SideDrawer";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -56,33 +55,26 @@ const AppContent = () => {
   const dispatch = useDispatch();
   const { isAuthenticated, loading } = useSelector((state) => state.auth);
   const [appInitialized, setAppInitialized] = useState(false);
-  const [serviceStatus, setServiceStatus] = useState(null);
 
-  // Initialize app on mount
+  // Initialize app on mount - SIMPLIFIED
   useEffect(() => {
+    let isMounted = true;
+
     const init = async () => {
       try {
         console.log("🚀 Starting BidDaddy application...");
 
-        // Initialize services with backend connectivity check
-        const serviceInit = await initializeServices();
-        setServiceStatus(serviceInit.status);
-
-        // Show appropriate notification based on service status
-        if (serviceInit.status.backendConnected) {
-          console.log("✅ Connected to live backend");
-        } else {
-          console.log("🎭 Running in demo mode");
-          toast.info("Demo mode active - some features may be limited", {
-            autoClose: 5000,
-            position: "top-center",
-          });
+        // Quick check for demo mode
+        if (!navigator.onLine) {
+          localStorage.setItem("useDemoMode", "true");
+          toast.info("Demo mode active - you're offline", { autoClose: 3000 });
         }
 
         // Check if user should be auto-logged in
-        const token =
-          localStorage.getItem("token") || localStorage.getItem("demoUser");
-        if (token && !isAuthenticated) {
+        const token = localStorage.getItem("token");
+        const demoUser = localStorage.getItem("demoUser");
+        
+        if ((token || demoUser) && !isAuthenticated && isMounted) {
           try {
             console.log("🔐 Checking existing authentication...");
             await dispatch(getUserProfile()).unwrap();
@@ -96,80 +88,47 @@ const AppContent = () => {
           }
         }
 
-        setAppInitialized(true);
-        console.log("🎉 Application initialized successfully");
+        if (isMounted) {
+          setAppInitialized(true);
+          console.log("🎉 Application initialized successfully");
+        }
+
       } catch (error) {
         console.error("❌ App initialization failed:", error);
-
-        // Force demo mode and continue
-        localStorage.setItem("useDemoMode", "true");
-        setServiceStatus({
-          backendConnected: false,
-          demoMode: true,
-          online: navigator.onLine,
-          message: "Initialization failed, using demo mode",
-        });
-
-        toast.error("Failed to connect to backend. Using demo mode.", {
-          autoClose: 5000,
-        });
-
-        setAppInitialized(true); // Still allow app to load
+        
+        if (isMounted) {
+          // Force demo mode and continue
+          localStorage.setItem("useDemoMode", "true");
+          toast.error("Initialization failed. Using demo mode.", { autoClose: 3000 });
+          setAppInitialized(true); // Still allow app to load
+        }
       }
     };
 
     init();
 
-    // Setup connection monitoring
-    const handleOnline = async () => {
-      console.log("🌐 Connection restored, checking backend...");
-      try {
-        const status = await getServiceStatus();
-        setServiceStatus(status);
-
-        if (status.backendConnected) {
-          toast.success("Connected to live backend!", { autoClose: 3000 });
-        } else {
-          toast.warning("Connection restored but backend unavailable", {
-            autoClose: 3000,
-          });
-        }
-      } catch (error) {
-        console.warn("Failed to check service status on reconnect");
-      }
-    };
-
-    const handleOffline = () => {
-      console.log("📴 Connection lost");
-      localStorage.setItem("useDemoMode", "true");
-      setServiceStatus((prev) => ({
-        ...prev,
-        online: false,
-        demoMode: true,
-      }));
-      toast.warning("Connection lost. Demo mode enabled.", { autoClose: 3000 });
-    };
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-
     return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
+      isMounted = false;
     };
   }, [dispatch, isAuthenticated]);
 
-  // Show loading spinner during initialization or auth check
-  if (!appInitialized || loading) {
+  // Show loading spinner only during actual loading
+  if (!appInitialized) {
     return (
-      <LoadingSpinner
-        fullScreen
+      <LoadingSpinner 
+        fullScreen 
         size="lg"
-        text={
-          !appInitialized
-            ? "Connecting to backend..."
-            : "Checking authentication..."
-        }
+        text="Starting application..."
+      />
+    );
+  }
+
+  if (loading) {
+    return (
+      <LoadingSpinner 
+        fullScreen 
+        size="md"
+        text="Loading..."
       />
     );
   }
@@ -179,14 +138,14 @@ const AppContent = () => {
       {/* Auth routes without sidebar */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-
+      
       {/* Main app routes with sidebar */}
       <Route path="/" element={<MainLayout />}>
         <Route index element={<Home />} />
         <Route path="auctions" element={<AuctionList />} />
         <Route path="auction/:id" element={<AuctionDetail />} />
         <Route path="leaderboard" element={<Leaderboard />} />
-
+        
         {/* Protected routes */}
         <Route
           path="dashboard"
@@ -228,7 +187,7 @@ const AppContent = () => {
             </ProtectedRoute>
           }
         />
-
+        
         {/* Catch all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
