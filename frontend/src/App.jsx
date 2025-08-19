@@ -29,7 +29,6 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import LoadingSpinner from "./components/LoadingSpinner";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./utils/globalErrorHandler";
 
 const MainLayout = () => {
   const { isOpen } = useSidebar();
@@ -56,7 +55,7 @@ const AppContent = () => {
   const { isAuthenticated, loading } = useSelector((state) => state.auth);
   const [appInitialized, setAppInitialized] = useState(false);
 
-  // Initialize app on mount - SIMPLIFIED
+  // Initialize app on mount - SIMPLE VERSION
   useEffect(() => {
     let isMounted = true;
 
@@ -64,10 +63,9 @@ const AppContent = () => {
       try {
         console.log("🚀 Starting BidDaddy application...");
 
-        // Quick check for demo mode
+        // Simple offline check
         if (!navigator.onLine) {
           localStorage.setItem("useDemoMode", "true");
-          toast.info("Demo mode active - you're offline", { autoClose: 3000 });
         }
 
         // Check if user should be auto-logged in
@@ -99,7 +97,6 @@ const AppContent = () => {
         if (isMounted) {
           // Force demo mode and continue
           localStorage.setItem("useDemoMode", "true");
-          toast.error("Initialization failed. Using demo mode.", { autoClose: 3000 });
           setAppInitialized(true); // Still allow app to load
         }
       }
@@ -115,21 +112,23 @@ const AppContent = () => {
   // Show loading spinner only during actual loading
   if (!appInitialized) {
     return (
-      <LoadingSpinner 
-        fullScreen 
-        size="lg"
-        text="Starting application..."
-      />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <LoadingSpinner 
+          size="lg"
+          text="Starting application..."
+        />
+      </div>
     );
   }
 
   if (loading) {
     return (
-      <LoadingSpinner 
-        fullScreen 
-        size="md"
-        text="Loading..."
-      />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <LoadingSpinner 
+          size="md"
+          text="Loading..."
+        />
+      </div>
     );
   }
 
