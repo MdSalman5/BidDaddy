@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { auctionService } from "../services";
 import AuctionCard from "../components/AuctionCard";
 import LoadingSpinner from "../components/LoadingSpinner";
-import FloatingThemeToggle from "../components/FloatingThemeToggle";
 import FilterModal from "../components/FilterModal";
 import { toast } from "react-toastify";
 import {
@@ -46,7 +45,7 @@ const AuctionList = () => {
       setError(null);
 
       const response = await auctionService.getAllAuctions();
-
+      
       if (response?.items) {
         setAuctions(response.items);
       } else if (Array.isArray(response)) {
@@ -54,7 +53,7 @@ const AuctionList = () => {
       } else {
         setAuctions([]);
       }
-
+      
       console.log(`✅ Loaded ${auctions.length} auctions`);
     } catch (error) {
       console.error("❌ Failed to load auctions:", error);
@@ -80,7 +79,7 @@ const AuctionList = () => {
 
   const categories = [
     "Electronics",
-    "Art & Collectibles",
+    "Art & Collectibles", 
     "Jewelry & Watches",
     "Vehicles",
     "Fashion",
@@ -121,10 +120,7 @@ const AuctionList = () => {
     }
 
     // Condition filter
-    if (
-      selectedCondition !== "all" &&
-      auction.condition !== selectedCondition
-    ) {
+    if (selectedCondition !== "all" && auction.condition !== selectedCondition) {
       return false;
     }
 
@@ -229,16 +225,14 @@ const AuctionList = () => {
                 Discover unique items and place your bids
               </p>
             </div>
-
+            
             <div className="flex items-center gap-3">
               <button
                 onClick={handleRefresh}
                 disabled={refreshing}
                 className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
               >
-                <RefreshCw
-                  className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`}
-                />
+                <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
                 Refresh
               </button>
             </div>
@@ -434,7 +428,7 @@ const AuctionList = () => {
           <p className="text-gray-600 dark:text-gray-400">
             Showing {sortedAuctions.length} of {auctions.length} auctions
           </p>
-
+          
           {sortedAuctions.length === 0 && auctions.length > 0 && (
             <div className="text-center">
               <p className="text-gray-500 dark:text-gray-400 mb-4">
@@ -508,8 +502,6 @@ const AuctionList = () => {
         conditions={conditions}
         sortOptions={sortOptions}
       />
-
-      <FloatingThemeToggle />
     </div>
   );
 };
