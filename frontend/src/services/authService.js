@@ -2,17 +2,15 @@ import api from "./api";
 import { demoAuthService } from "./demoAuthService";
 
 const isDemoMode = () => {
-  return (
-    localStorage.getItem("useDemoMode") === "true" ||
-    localStorage.getItem("demoUser") !== null ||
-    !navigator.onLine
-  );
+  return localStorage.getItem("useDemoMode") === "true" || 
+         localStorage.getItem("demoUser") !== null ||
+         !navigator.onLine;
 };
 
 const handleApiError = (error, fallbackAction) => {
   // Network errors or server unavailable
   if (
-    error.code === "ERR_NETWORK" ||
+    error.code === "ERR_NETWORK" || 
     error.code === "ECONNREFUSED" ||
     !navigator.onLine ||
     error.response?.status >= 500
@@ -21,7 +19,7 @@ const handleApiError = (error, fallbackAction) => {
     localStorage.setItem("useDemoMode", "true");
     return fallbackAction();
   }
-
+  
   // Client errors (400-499) should be thrown as is
   throw error;
 };
@@ -58,6 +56,11 @@ export const authService = {
         },
       });
 
+      // Store token if received
+      if (response.token) {
+        localStorage.setItem("token", response.token);
+      }
+
       return response;
     } catch (error) {
       return handleApiError(error, () => demoAuthService.register(userData));
@@ -72,21 +75,19 @@ export const authService = {
 
     try {
       const response = await api.post("/user/login", { email, password });
-
+      
       // Store token if received
       if (response.token) {
         localStorage.setItem("token", response.token);
       }
-
+      
       return response;
     } catch (error) {
-      return handleApiError(error, () =>
-        demoAuthService.login(email, password),
-      );
+      return handleApiError(error, () => demoAuthService.login(email, password));
     }
   },
 
-  // Get current user profile
+  // Get current user profile - FIXED to prevent loops
   getProfile: async () => {
     if (isDemoMode()) {
       return demoAuthService.getProfile();
@@ -95,6 +96,7 @@ export const authService = {
     // Check if we have a token first
     const token = localStorage.getItem("token");
     if (!token) {
+      // No token = not authenticated, don't call API
       throw new Error("No authentication token found");
     }
 
@@ -102,12 +104,12 @@ export const authService = {
       const response = await api.get("/user/me");
       return response;
     } catch (error) {
-      // If token is invalid, clear it
+      // If token is invalid, clear it and don't retry
       if (error.response?.status === 401) {
         localStorage.removeItem("token");
-        throw error;
+        throw new Error("Authentication token invalid");
       }
-
+      
       return handleApiError(error, () => demoAuthService.getProfile());
     }
   },
@@ -158,9 +160,7 @@ export const authService = {
       const response = await api.put("/user/profile", userData);
       return response;
     } catch (error) {
-      return handleApiError(error, () =>
-        demoAuthService.updateProfile(userData),
-      );
+      return handleApiError(error, () => demoAuthService.updateProfile(userData));
     }
   },
 
@@ -177,27 +177,9 @@ export const authService = {
       });
       return response;
     } catch (error) {
-      return handleApiError(error, () =>
-        demoAuthService.changePassword(currentPassword, newPassword),
+      return handleApiError(error, () => 
+        demoAuthService.changePassword(currentPassword, newPassword)
       );
-    }
-  },
-
-  // Refresh token
-  refreshToken: async () => {
-    if (isDemoMode()) {
-      return demoAuthService.getProfile();
-    }
-
-    try {
-      const response = await api.post("/user/refresh-token");
-      if (response.token) {
-        localStorage.setItem("token", response.token);
-      }
-      return response;
-    } catch (error) {
-      localStorage.removeItem("token");
-      throw error;
     }
   },
 
@@ -209,7 +191,7 @@ export const authService = {
       localStorage.removeItem("useDemoMode");
       localStorage.removeItem("demoUser");
     }
-
+    
     // Reload page to reinitialize with new mode
     window.location.reload();
   },
@@ -217,10 +199,11 @@ export const authService = {
   // Check if in demo mode
   isDemoMode,
 
-  // Check if user is authenticated
+  // Check if user is authenticated - SIMPLIFIED
   isAuthenticated: () => {
     return Boolean(
-      localStorage.getItem("token") || localStorage.getItem("demoUser"),
+      localStorage.getItem("token") || 
+      localStorage.getItem("demoUser")
     );
   },
 
