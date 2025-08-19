@@ -54,8 +54,9 @@ const AppContent = () => {
   const dispatch = useDispatch();
   const { isAuthenticated, loading } = useSelector((state) => state.auth);
   const [appInitialized, setAppInitialized] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
 
-  // Initialize app on mount - SIMPLE VERSION
+  // Initialize app ONCE on mount - NO DEPENDENCIES TO PREVENT LOOPS
   useEffect(() => {
     let isMounted = true;
 
@@ -68,21 +69,27 @@ const AppContent = () => {
           localStorage.setItem("useDemoMode", "true");
         }
 
-        // Check if user should be auto-logged in
-        const token = localStorage.getItem("token");
-        const demoUser = localStorage.getItem("demoUser");
-        
-        if ((token || demoUser) && !isAuthenticated && isMounted) {
-          try {
-            console.log("🔐 Checking existing authentication...");
-            await dispatch(getUserProfile()).unwrap();
-            console.log("✅ User authenticated successfully");
-          } catch (error) {
-            console.warn("⚠️ Auth check failed:", error.message);
-            // Clear invalid auth data
-            dispatch(clearAuth());
-            localStorage.removeItem("token");
-            localStorage.removeItem("demoUser");
+        // Check if user should be auto-logged in - ONLY IF NOT ALREADY CHECKED
+        if (!authChecked) {
+          const token = localStorage.getItem("token");
+          const demoUser = localStorage.getItem("demoUser");
+          
+          if (token || demoUser) {
+            try {
+              console.log("🔐 Checking existing authentication...");
+              await dispatch(getUserProfile()).unwrap();
+              console.log("✅ User authenticated successfully");
+            } catch (error) {
+              console.warn("⚠️ Auth check failed:", error.message);
+              // Clear invalid auth data
+              dispatch(clearAuth());
+              localStorage.removeItem("token");
+              localStorage.removeItem("demoUser");
+            }
+          }
+          
+          if (isMounted) {
+            setAuthChecked(true); // Mark auth as checked to prevent re-runs
           }
         }
 
@@ -97,7 +104,8 @@ const AppContent = () => {
         if (isMounted) {
           // Force demo mode and continue
           localStorage.setItem("useDemoMode", "true");
-          setAppInitialized(true); // Still allow app to load
+          setAppInitialized(true);
+          setAuthChecked(true);
         }
       }
     };
@@ -107,9 +115,9 @@ const AppContent = () => {
     return () => {
       isMounted = false;
     };
-  }, [dispatch, isAuthenticated]);
+  }, []); // EMPTY DEPENDENCIES - NO LOOPS!
 
-  // Show loading spinner only during actual loading
+  // Show loading spinner ONLY during initial app setup
   if (!appInitialized) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -121,16 +129,8 @@ const AppContent = () => {
     );
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <LoadingSpinner 
-          size="md"
-          text="Loading..."
-        />
-      </div>
-    );
-  }
+  // REMOVED THE SECOND LOADING CHECK THAT WAS CAUSING THE INFINITE SPINNER
+  // The Redux loading state was keeping the app stuck
 
   return (
     <Routes>
