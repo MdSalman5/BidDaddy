@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { auctionService } from "../services";
 import AuctionCard from "../components/AuctionCard";
 import LoadingSpinner from "../components/LoadingSpinner";
-import FilterModal from "../components/FilterModal";
 import { toast } from "react-toastify";
 import {
   Search,
@@ -34,7 +33,6 @@ const AuctionList = () => {
   const [sortBy, setSortBy] = useState("ending-soon");
   const [viewMode, setViewMode] = useState("grid");
   const [showFilters, setShowFilters] = useState(false);
-  const [showFilterModal, setShowFilterModal] = useState(false);
   const [auctionStatus, setAuctionStatus] = useState("active");
   const [refreshing, setRefreshing] = useState(false);
 
@@ -189,7 +187,11 @@ const AuctionList = () => {
   };
 
   if (loading) {
-    return <LoadingSpinner fullScreen text="Loading auctions..." />;
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <LoadingSpinner text="Loading auctions..." />
+      </div>
+    );
   }
 
   if (error) {
@@ -479,29 +481,6 @@ const AuctionList = () => {
           </div>
         ) : null}
       </div>
-
-      {/* Filter Modal for Mobile */}
-      <FilterModal
-        isOpen={showFilterModal}
-        onClose={() => setShowFilterModal(false)}
-        filters={{
-          searchTerm,
-          selectedCategory,
-          selectedCondition,
-          priceRange,
-          sortBy,
-        }}
-        onFiltersChange={(newFilters) => {
-          setSearchTerm(newFilters.searchTerm);
-          setSelectedCategory(newFilters.selectedCategory);
-          setSelectedCondition(newFilters.selectedCondition);
-          setPriceRange(newFilters.priceRange);
-          setSortBy(newFilters.sortBy);
-        }}
-        categories={categories}
-        conditions={conditions}
-        sortOptions={sortOptions}
-      />
     </div>
   );
 };
